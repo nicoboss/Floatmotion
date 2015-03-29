@@ -4,12 +4,68 @@
 
  http://www.nicobosshard.ch
 """
-import sys, math, pygame, random, time
-import control
+import Leap, sys, thread, math, pygame, random, time
+from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-#control.main()
+class SampleListener(Leap.Listener):
+    finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
+    bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
+    state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
+
+    def on_init(self, controller):
+        print "Initialized"
+
+    def on_connect(self, controller):
+        print "Connected"
+
+        # Enable gestures
+        controller.enable_gesture(Leap.Gesture.TYPE_CIRCLE);
+        controller.enable_gesture(Leap.Gesture.TYPE_KEY_TAP);
+        controller.enable_gesture(Leap.Gesture.TYPE_SCREEN_TAP);
+        controller.enable_gesture(Leap.Gesture.TYPE_SWIPE);
+
+    def on_disconnect(self, controller):
+        # Note: not dispatched when running in a debugger.
+        print "Disconnected"
+
+    def on_exit(self, controller):
+        print "Exited"
+
+    def on_frame(self, controller):
+        # Get the most recent frame and report some basic information
+        frame = controller.frame()
+
+        #print "Frame id: %d, timestamp: %d, hands: %d, fingers: %d, tools: %d, gestures: %d" % (
+              #frame.id, frame.timestamp, len(frame.hands), len(frame.fingers), len(frame.tools), len(frame.gestures()))
+
+        # Get hands
+        for hand in frame.hands:
+
+            handType = "Left hand" if hand.is_left else "Right hand"
+
+            print "  %s, id %d, position: %s" % (
+                handType, hand.id, hand.palm_position)
+
+            Player.speed_x=(hand.palm_position[0]/30-Player.x)/10
+            Player.speed_y=(hand.palm_position[1]/30-8-Player.y)/10
+            Player.speed_z=(hand.palm_position[2]/30-Player.z)/10
+
+            print Player.speed_x
+            print Player.speed_y
+            print Player.speed_z
+
+
+listener = SampleListener()
+controller = Leap.Controller()
+
+controller.add_listener(listener)
+
+frame = controller.frame()
+
+
+
 pygame.init()
 random.seed(time.clock())
 Screen = (800,600)
@@ -27,7 +83,7 @@ glLibLighting(True)
 Sun = glLibLight([0,20,20],Camera)
 Sun.enable()
 
-glLibColorMaterial(True) 
+glLibColorMaterial(True)
 
 drawing = 0
 Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("ExamplesData/Tunnel.obj")]
@@ -43,7 +99,7 @@ for z in range(-110,-10,10):
             if(random.randint(0,100)>50):
                 Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(150,255),random.randint(150,255),random.randint(150,255),255))
 
-    
+
 
 while True:
     key = pygame.key.get_pressed()
@@ -69,13 +125,17 @@ while True:
     elif key[K_DOWN]: Camera.set_target_pos([0,-6,2])
     else: Camera.set_target_pos([0,0.5,6])
 
+    Player.x+=Player.speed_x
+    Player.y+=Player.speed_y
+    Player.z+=Player.speed_z
+
     Camera.update()
-            
+
     Window.clear()
     Camera.set_camera()
     Sun.draw()
 ##    glLibColor((255,255,255))
-##    
+##
 ##    glTranslated(1,1,1)
 ##    Objects[0].draw()
 ##    glLibColor((255,0,0))
@@ -85,13 +145,13 @@ while True:
 ##    Objects[3].draw()
 ##    Objects[4].draw()
 
-    glTranslated(-0.5,Player.y,5+Player.x+1)
-    BGround.draw()
-    glTranslated(-0.5,-Player.y,-5+Player.x+1)
-
-    glTranslated(-0.5,Player.y,5+Player.x+10)
-    BGround.draw()
-    glTranslated(-0.5,-Player.y,-5+Player.x+10)
+##    glTranslated(-0.5,Player.y,5+Player.x+1)
+##    BGround.draw()
+##    glTranslated(-0.5,-Player.y,-5+Player.x+1)
+##
+##    glTranslated(-0.5,Player.y,5+Player.x+10)
+##    BGround.draw()
+##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
     GenerateNewArea=0
     Object_ID=-1
@@ -112,7 +172,7 @@ while True:
     glLibColor((255,255,255,255))
     Player.draw()
     glTranslated(-Player.x,-Player.y,-Player.z)
-    
+
     Window.flip()
 
     GenerateNewArea_Schutzzeit-=1
@@ -122,4 +182,6 @@ while True:
             for y in range(-1,2):
                 if(random.randint(0,100)>50):
                     Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(150,255),random.randint(150,255),random.randint(150,255),255))
-        
+
+
+
