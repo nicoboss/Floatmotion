@@ -146,12 +146,20 @@ class SampleListener(Leap.Listener):
             return "STATE_INVALID"
 
 def main():
+    print "Hallo"
     # Create a sample listener and controller
     listener = SampleListener()
     controller = Leap.Controller()
 
-    # Have the sample listener receive events from the controller
     controller.add_listener(listener)
+
+    frame = controller.frame()
+
+    while(1):
+        print ""
+
+    # Have the sample listener receive events from the controller
+    #controller.add_listener(listener)
 
     # Keep this process running until Enter is pressed
     print "Press Enter to quit..."
