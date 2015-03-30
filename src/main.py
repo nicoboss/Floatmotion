@@ -9,6 +9,13 @@ from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+pygame.mixer.music.load("235349__dambient__8-bit-loop.mp3")
+pygame.mixer.music.play()
+##pygame.mixer.music.loop()
+
+Camera_pos = [0,0.5,6]
+
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
@@ -115,15 +122,22 @@ while True:
                 drawing += 1
                 if drawing == 6:
                     drawing = 0
-            if event.key == K_a: Player.x+=-0.1
-            if event.key == K_w: Player.y+=0.1
-            if event.key == K_d: Player.x+=0.1
-            if event.key == K_s: Player.y+=-0.1
-    if   key[K_LEFT]: Camera.set_target_pos([-6,0.5,0])
-    elif key[K_RIGHT]: Camera.set_target_pos([6,0.5,0])
-    elif key[K_UP]: Camera.set_target_pos([0,6,2])
-    elif key[K_DOWN]: Camera.set_target_pos([0,-6,2])
-    else: Camera.set_target_pos([0,0.5,6])
+    if key[K_a]: Player.x+=-0.04
+    if key[K_w]: Player.y+=0.04
+    if key[K_d]: Player.x+=0.04
+    if key[K_s]: Player.y+=-0.04
+##    if   key[K_LEFT]: Camera.set_target_pos([-6,0.5,0])
+##    elif key[K_RIGHT]: Camera.set_target_pos([6,0.5,0])
+##    elif key[K_UP]: Camera.set_target_pos([0,6,2])
+##    elif key[K_DOWN]: Camera.set_target_pos([0,-6,2])
+##    else: Camera.set_target_pos([0,0.5,6])
+    if key[K_LEFT]: Camera_pos[0]-=1
+    if key[K_RIGHT]: Camera_pos[0]+=1
+    if key[K_UP]: Camera_pos[2]-=1
+    if key[K_DOWN]: Camera_pos[2]+=1
+    if key[K_0]: Camera_pos = [0,0.5,6]
+
+    Camera.set_target_pos(Camera_pos)
 
     Player.x+=Player.speed_x
     Player.y+=Player.speed_y
