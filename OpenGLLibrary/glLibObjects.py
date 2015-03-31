@@ -64,18 +64,20 @@ class glLibObjFromFile(glLibObj):
         self.list = glLibOBJLoad.OBJ(path).gl_list
 class glLibObjCube(glLibObj):
     def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255):
+        self.size=size
+
         self.x=x
         self.y=y
         self.z=z
         self.speed_x=speed_x
         self.speed_y=speed_y
         self.speed_z=speed_z
-        
+
         self.r=r
         self.g=g
         self.b=b
         self.a=a
-        
+
         self.list = glGenLists(1)
         glNewList(self.list, GL_COMPILE)
         glBegin(GL_QUADS)
@@ -103,18 +105,21 @@ class glLibObjSphere(glLibObj):
         glEndList()
 class glLibObjTexSphere(glLibObj):
     def __init__(self,radius,detail,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255):
+        self.radius=radius
+        self.detail=detail
+
         self.x=x
         self.y=y
         self.z=z
         self.speed_x=speed_x
         self.speed_y=speed_y
         self.speed_z=speed_z
-        
+
         self.r=r
         self.g=g
         self.b=b
         self.a=a
-        
+
         self.list = glGenLists(1)
         glNewList(self.list, GL_COMPILE)
         Sphere = gluNewQuadric()

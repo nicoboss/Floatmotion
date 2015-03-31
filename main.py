@@ -3,6 +3,19 @@
  Developed by NicoBosshard <nico@bosshome.ch>
 
  http://www.nicobosshard.ch
+
+Known Bugs:
+No Transparence by tintime generated Cubes
+
+To-Do:
+Particles
+    - Random direction
+    - Fix duration (object preporrieies)
+    - Half Random Speed
+    - Liddls Cubes wit Half Fix size
+Sphere texture
+    - damage texture
+Sphere Rotation
 """
 import Leap, sys, thread, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -10,8 +23,8 @@ from pygame.locals import *
 from OpenGLLibrary import *
 
 pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-pygame.mixer.music.load("235349__dambient__8-bit-loop.mp3")
-pygame.mixer.music.play()
+pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
+##pygame.mixer.music.play()
 ##pygame.mixer.music.loop()
 
 Camera_pos = [0,0.5,6]
@@ -64,6 +77,24 @@ class SampleListener(Leap.Listener):
             print Player.speed_z
 
 
+def SphereRectCollision(sphere, rect):
+    sphereXDistance = abs(sphere.x - rect.x)
+    sphereYDistance = abs(sphere.y - rect.y)
+    sphereZDistance = abs(sphere.z - rect.z)
+
+    if(sphereXDistance >= (rect.size + sphere.radius)): return 0
+    if(sphereYDistance >= (rect.size + sphere.radius)): return 0
+    if(sphereZDistance >= (rect.size + sphere.radius)): return 0
+
+    if(sphereXDistance < (rect.size)): return 1
+    if(sphereYDistance < (rect.size)): return 1
+    if(sphereZDistance < (rect.size)): return 1
+
+    cornerDistance_sq = (sphereXDistance - rect.size)**2 + (sphereYDistance - rect.size)**2 + (sphereYDistance - rect.size)**2
+
+    return (cornerDistance_sq < (sphere.radius * sphere.radius))
+
+
 listener = SampleListener()
 controller = Leap.Controller()
 
@@ -71,12 +102,11 @@ controller.add_listener(listener)
 
 frame = controller.frame()
 
-
-
 pygame.init()
 random.seed(time.clock())
-Screen = (800,600)
+Screen = (1280,1024)
 Cube_speed_z=0.1
+Transparence=200
 GenerateNewArea_Schutzzeit=0
 Window = glLibWindow(Screen,caption="Lighting Test")
 View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
@@ -95,16 +125,16 @@ glLibColorMaterial(True)
 drawing = 0
 Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("ExamplesData/Tunnel.obj")]
 BGround = glLibObjFromFile("ExamplesData/Tunnel.obj")
-Player = glLibObjTexSphere(0.5,64,0,0,2)
+Player = glLibObjTexSphere(0.3,64,0,0,2)
 
-Texture = glLibTexture("ExamplesData/fugu.png")
+Texture = glLibTexture("ExamplesData/Oak Ligh.bmp")
 Cubes = []
 
 for z in range(-110,-10,10):
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(0,100)>50):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(150,255),random.randint(150,255),random.randint(150,255),255))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
 
 
 
@@ -169,22 +199,35 @@ while True:
 
     GenerateNewArea=0
     Object_ID=-1
+
     for Cube in Cubes:
+        Object_ID+=1
+        if(Cube.z>5):
+            GenerateNewArea=Cube.z-100
+            Cubes.pop(Object_ID)
+        if(SphereRectCollision(Player,Cube)==1):
+            Cubes.pop(Object_ID)
+
+
+    for Cube in Cubes:
+
+        Cube.x+=Cube.speed_x
+        Cube.y+=Cube.speed_y
+        Cube.z+=Cube.speed_z
+        #print Cube.z
         Object_ID+=1
         glTranslated(Cube.x,Cube.y,Cube.z)
         glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
         Cube.draw()
-        Cube.x+=Cube.speed_x
-        Cube.y+=Cube.speed_y
-        Cube.z+=Cube.speed_z
         glTranslated(-Cube.x,-Cube.y,-Cube.z)
-        if(Cube.z>5):
-            GenerateNewArea=Cube.z-100
-            Cubes.pop(Object_ID)
+
+
 
     glTranslated(Player.x,Player.y,Player.z)
+    glRotate(10,Player.x,Player.y,Player.z)
     glLibColor((255,255,255,255))
     Player.draw()
+    glRotate(-10,Player.x,Player.y,Player.z)
     glTranslated(-Player.x,-Player.y,-Player.z)
 
     Window.flip()
@@ -195,7 +238,7 @@ while True:
         for x in range(-1,2):
             for y in range(-1,2):
                 if(random.randint(0,100)>50):
-                    Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(150,255),random.randint(150,255),random.randint(150,255),255))
+                    Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
 
 
 
