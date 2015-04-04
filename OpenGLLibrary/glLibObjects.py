@@ -63,7 +63,7 @@ class glLibObjFromFile(glLibObj):
     def __init__(self,path):
         self.list = glLibOBJLoad.OBJ(path).gl_list
 class glLibObjCube(glLibObj):
-    def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255):
+    def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,time=-1):
         self.size=size
 
         self.x=x
@@ -77,6 +77,8 @@ class glLibObjCube(glLibObj):
         self.g=g
         self.b=b
         self.a=a
+
+        self.time=time
 
         self.list = glGenLists(1)
         glNewList(self.list, GL_COMPILE)
