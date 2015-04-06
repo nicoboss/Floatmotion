@@ -60,7 +60,13 @@ class glLibObjUser(glLibObj):
     def finish(self):
         glEndList()
 class glLibObjFromFile(glLibObj):
-    def __init__(self,path):
+    def __init__(self,path,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0):
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
         self.list = glLibOBJLoad.OBJ(path).gl_list
 class glLibObjCube(glLibObj):
     def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,time=-1):

@@ -24,7 +24,7 @@ from OpenGLLibrary import *
 
 pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
 pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
-pygame.mixer.music.play()
+#pygame.mixer.music.play()
 ##pygame.mixer.music.loop()
 
 Camera_pos = [0,0.5,6]
@@ -107,6 +107,7 @@ random.seed(time.clock())
 Screen = (1280,1024)
 Cube_speed_z=0.1
 Transparence=200
+r=0
 GenerateNewArea_Schutzzeit=0
 Window = glLibWindow(Screen,caption="Lighting Test")
 View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
@@ -124,7 +125,7 @@ glLibColorMaterial(True)
 
 drawing = 0
 Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("ExamplesData/Tunnel.obj")]
-BGround = glLibObjFromFile("ExamplesData/Leer.obj")
+BGround = glLibObjFromFile("ExamplesData/leer.obj")
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 
 Texture = glLibTexture("ExamplesData/Oak Ligh.bmp")
@@ -190,11 +191,13 @@ while True:
 ##    Objects[3].draw()
 ##    Objects[4].draw()
 ##
-    glScalef(2,2,20);
-    #glTranslated(-0.5,Player.y,5+Player.x+1)
+
+    BGround.z+=0.01
+    glScalef(10,10,10);
+    glTranslated(BGround.x,BGround.y,BGround.z)
     BGround.draw()
-    #glTranslated(-0.5,-Player.y,-5+Player.x+1)
-    glScalef(1,1,1);
+    glTranslated(-BGround.x,-BGround.y,-BGround.z)
+    glScalef(0.1,0.1,0.1);
 
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
 ##    BGround.draw()
@@ -209,8 +212,12 @@ while True:
             GenerateNewArea=Cube.z-100
             Cubes.pop(Object_ID)
         if(SphereRectCollision(Player,Cube)==1):
-            for i in range(400):
-                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,random.uniform(-Cube_speed_z,Cube_speed_z),random.uniform(-Cube_speed_z,Cube_speed_z),random.uniform(-Cube_speed_z,Cube_speed_z),Cube.r,Cube.g,Cube.b,Transparence,200))
+            for i in range(300):
+                x=random.uniform(-Cube_speed_z,Cube_speed_z)
+                y=random.uniform(-Cube_speed_z,Cube_speed_z)
+                z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                magnitude  = sqrt(x**2 + y**2 + z**2)
+                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,200))
             Cubes.pop(Object_ID)
 
     for Cube in Cubes:
@@ -236,13 +243,15 @@ while True:
         if(Particle.time==0):
             Particles.pop(Object_ID)
 
-
-    glRotatef(10,Player.x,Player.y,Player.z)
-    glTranslated(Player.x,Player.y,Player.z)
     glLibColor((255,255,255,255))
+    glTranslated(0,0,0)
+    r+=1
+    glRotatef(r,1,0,0)
+    glTranslated(0,0,1)
     Player.draw()
-    glTranslated(-Player.x,-Player.y,-Player.z)
-    glRotatef(-10,Player.x,Player.y,Player.z)
+    glTranslated(Player.x,Player.y,Player.z)
+    #glTranslated(-Player.x,-Player.y,-Player.z)
+    #glRotatef(-10,Player.x,Player.y,Player.z)
 
     Window.flip()
 
