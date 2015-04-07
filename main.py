@@ -158,6 +158,13 @@ while True:
     if key[K_w]: Player.y+=0.04
     if key[K_d]: Player.x+=0.04
     if key[K_s]: Player.y+=-0.04
+
+    if key[K_j]: Player.speed_x+=-0.001
+    if key[K_i]: Player.speed_y+=0.001
+    if key[K_l]: Player.speed_x+=0.001
+    if key[K_k]: Player.speed_y+=-0.001
+    if key[K_o]: Player.speed_z+=0.001
+    if key[K_p]: Player.speed_z+=-0.001
 ##    if   key[K_LEFT]: Camera.set_target_pos([-6,0.5,0])
 ##    elif key[K_RIGHT]: Camera.set_target_pos([6,0.5,0])
 ##    elif key[K_UP]: Camera.set_target_pos([0,6,2])
@@ -244,12 +251,18 @@ while True:
             Particles.pop(Object_ID)
 
     glLibColor((255,255,255,255))
-    glTranslated(0,0,0)
-    r+=1
-    glRotatef(r,1,0,0)
-    glTranslated(0,0,1)
-    Player.draw()
     glTranslated(Player.x,Player.y,Player.z)
+    #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
+    Player.rotate_x+=Player.speed_x*100
+    Player.rotate_y+=Player.speed_y*100
+    Player.rotate_z+=Player.speed_z*100
+    #if not (Player.speed_x==0 and Player.speed_y==0 and Player.speed_z==0):
+    glRotatef(Player.rotate_x,0,1,0)
+    glRotatef(-Player.rotate_y,1,0,0)
+    glRotatef(Player.rotate_z,1,0,0)
+    #print Player.speed_x*10000
+    Player.draw()
+    glTranslated(-Player.x,-Player.y,-Player.z)
     #glTranslated(-Player.x,-Player.y,-Player.z)
     #glRotatef(-10,Player.x,Player.y,Player.z)
 
