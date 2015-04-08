@@ -17,7 +17,8 @@ Sphere texture
     - damage texture
 Sphere Rotation
 """
-import Leap, sys, thread, math, pygame, random, time
+import copy
+import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
@@ -28,6 +29,16 @@ pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
 ##pygame.mixer.music.loop()
 
 Camera_pos = [0,0.5,6]
+
+
+class glLibObjStatusbar_heart:
+    def __init__(self,x=0,y=0,z=0,rotate_x=0,rotate_y=0,rotate_z=0):
+        self.x=x
+        self.y=y
+        self.z=z
+        self.rotate_x=rotate_x
+        self.rotate_y=rotate_y
+        self.rotate_z=rotate_z
 
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
@@ -95,6 +106,7 @@ def SphereRectCollision(sphere, rect):
     return (cornerDistance_sq < (sphere.radius * sphere.radius))
 
 
+
 listener = SampleListener()
 controller = Leap.Controller()
 
@@ -103,40 +115,78 @@ controller.add_listener(listener)
 frame = controller.frame()
 
 pygame.init()
+System_Icon = pygame.image.load("img/Cube.ico")
+pygame.display.set_icon(System_Icon)
+screen = pygame.display.set_mode((1280, 1024))
+#Heart_img = pygame.image.load("img/heart_PNG685.png")
+Heart_img = pygame.image.load("img/Leap.jpg")
+imagerect = Heart_img.get_rect()
+screen.blit(pygame.transform.scale(Heart_img, (1280, 1024)), (0, 0))
+pygame.display.flip()
+
 random.seed(time.clock())
 Screen = (1280,1024)
 Cube_speed_z=0.1
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
-Window = glLibWindow(Screen,caption="Lighting Test")
-View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
-View3D.set_view()
+Window = glLibWindow(Screen,caption="Float Motion")
+View3D = glLibView3D((0,0,Screen[0],Screen[1]-60),45)
+Statusbar = glLibView3D((0,Screen[1]-60,Screen[0],60),45)
 
 glLibTexturing(True)
 
 Camera = glLibCamera([0,0.5,6],[0,0,0])
+Staturbar_Camera = glLibCamera([0,0.5,4],[0,0,0])
 
 glLibLighting(False)
 Sun = glLibLight([0,20,20],Camera)
 Sun.enable()
+Staturbar_Sun = glLibLight([0,20,20],Camera)
+Staturbar_Sun.enable()
+
+glLibShadowInit([[512,5]])
 
 glLibColorMaterial(True)
 
 drawing = 0
-Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("ExamplesData/Tunnel.obj")]
-BGround = glLibObjFromFile("ExamplesData/leer.obj")
-Player = glLibObjTexSphere(0.3,64,0,0,2)
+#Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("obj/Tunnel.obj")]
 
-Texture = glLibTexture("ExamplesData/Oak Ligh.bmp")
+#time.sleep(2)
+
+
+Player = glLibObjTexSphere(0.3,64,0,0,2)
+Texture = glLibTexture("textures/Oak Ligh.bmp")
+Statusbar_hearts = []
 Cubes = []
 Particles = []
 
+BGround = glLibObjFromFile("obj/leer.obj")
+
+Heart = glLibObjFromFile("obj/Heart.obj")
+
+time.sleep(2)
+
+#for v in Heart.list:
+#    print v
+print Heart.list
+
+for x in range(0,10):
+    Statusbar_hearts.append(glLibObjStatusbar_heart(x/100,-1.5,0,0,0,0))
+    #glLibObjStatusbar_heart.list=copy.copy(Heart.list)
+
+
+Cubes_count=0
 for z in range(-110,-10,10):
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(0,100)>50):
                 Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                Cubes_count+=1
+
+#if(Cubes_count==9):
+
+#glClearColor( 1, 1, 1, 1)
 
 
 
@@ -177,14 +227,36 @@ while True:
     if key[K_0]: Camera_pos = [0,0.5,6]
 
     Camera.set_target_pos(Camera_pos)
+    Staturbar_Camera.set_target_pos(Camera_pos)
 
     Player.x+=Player.speed_x
     Player.y+=Player.speed_y
     Player.z+=Player.speed_z
 
     Camera.update()
+    Staturbar_Camera.update()
 
     Window.clear()
+
+    Statusbar.set_view()
+    Staturbar_Camera.set_camera()
+    Staturbar_Sun.draw()
+
+
+    for Statusbar_heart in Statusbar_hearts:
+        glRotatef(90,0,1,0)
+        glScalef(4,4,4);
+        glTranslated(Statusbar_heart.x,Statusbar_heart.y,Statusbar_heart.z)
+
+        Heart.draw()
+
+        glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
+        glScalef(0.25,0.25,0.25);
+        glRotatef(-90,0,1,0)
+
+
+
+    View3D.set_view()
     Camera.set_camera()
     Sun.draw()
 ##    glLibColor((255,255,255))
@@ -199,6 +271,8 @@ while True:
 ##    Objects[4].draw()
 ##
 
+    #BGround.x=-0.25
+    #BGround.y=-0.25
     BGround.z+=0.01
     glScalef(10,10,10);
     glTranslated(BGround.x,BGround.y,BGround.z)
@@ -206,12 +280,14 @@ while True:
     glTranslated(-BGround.x,-BGround.y,-BGround.z)
     glScalef(0.1,0.1,0.1);
 
+
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
 ##    BGround.draw()
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
     GenerateNewArea=0
     Object_ID=-1
+
 
     for Cube in Cubes:
         Object_ID+=1
@@ -266,7 +342,17 @@ while True:
     #glTranslated(-Player.x,-Player.y,-Player.z)
     #glRotatef(-10,Player.x,Player.y,Player.z)
 
+
+    #glScalef(10,10,10);
+    glTranslated(-2.8,1,2)
+    glRotatef(90,0,1,0)
+    Heart.draw()
+    glRotatef(-90,0,1,0)
+    glTranslated(2.8,-1,2)
+    #glScalef(0.1,0.1,0.1);
+
     Window.flip()
+
 
     GenerateNewArea_Schutzzeit-=1
     if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):

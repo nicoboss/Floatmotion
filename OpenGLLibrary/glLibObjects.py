@@ -1,7 +1,9 @@
+import threading
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import glutSolidTeapot
 import glLibOBJLoad
+import glLibOBJLoad_threading
 from glLibLocals import *
 from glLibTexturing import *
 from math import *
@@ -68,6 +70,25 @@ class glLibObjFromFile(glLibObj):
         self.speed_y=speed_y
         self.speed_z=speed_z
         self.list = glLibOBJLoad.OBJ(path).gl_list
+class glLibObjFromFile_threading(glLibObj):
+    def __init__(self,path,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0):
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
+
+        t = threading.Thread(target=glLibObjFromFile_threading.do_work, args=(self,path,glLibObj))
+        t.daemon = True
+        t.start()
+        self.list = glLibOBJLoad.OBJ(path).gl_list
+        #glLibObjFromFile_threading.do_work(self,path,glLibObj)
+
+    def do_work(self, path,glLibObj):
+        print "Hallo"
+        self.list = glLibOBJLoad.OBJ(path).gl_list
+        print "Fertig"
 class glLibObjCube(glLibObj):
     def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,time=-1):
         self.size=size
