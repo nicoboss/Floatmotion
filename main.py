@@ -131,8 +131,9 @@ Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
 Window = glLibWindow(Screen,caption="Float Motion")
-View3D = glLibView3D((0,0,Screen[0],Screen[1]-60),45)
-Statusbar = glLibView3D((0,Screen[1]-60,Screen[0],60),45)
+View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
+Statusbar = glLibView2D((0,Screen[1]-100,Screen[0],100),45)
+
 
 glLibTexturing(True)
 
@@ -165,14 +166,14 @@ BGround = glLibObjFromFile("obj/leer.obj")
 
 Heart = glLibObjFromFile("obj/Heart.obj")
 
-time.sleep(2)
+#time.sleep(2)
 
 #for v in Heart.list:
 #    print v
-print Heart.list
+#print Heart.list
 
 for x in range(0,10):
-    Statusbar_hearts.append(glLibObjStatusbar_heart(x/100,-1.5,0,0,0,0))
+    Statusbar_hearts.append(glLibObjStatusbar_heart(x*10,-3,0,0,0,0))
     #glLibObjStatusbar_heart.list=copy.copy(Heart.list)
 
 
@@ -188,7 +189,7 @@ for z in range(-110,-10,10):
 
 #glClearColor( 1, 1, 1, 1)
 
-
+P=-40
 
 while True:
     key = pygame.key.get_pressed()
@@ -242,18 +243,23 @@ while True:
     Staturbar_Camera.set_camera()
     Staturbar_Sun.draw()
 
+    #P+=0.001
+    #glTranslated(P,-1.5,0)
 
     for Statusbar_heart in Statusbar_hearts:
-        glRotatef(90,0,1,0)
-        glScalef(4,4,4);
-        glTranslated(Statusbar_heart.x,Statusbar_heart.y,Statusbar_heart.z)
+        
+        #glRotatef(90,0,1,0)
+        #glScalef(4,4,4);
+        glTranslated(4,0,0)
 
         Heart.draw()
 
-        glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
-        glScalef(0.25,0.25,0.25);
-        glRotatef(-90,0,1,0)
+        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)        
+        #glScalef(0.25,0.25,0.25);
+        #glRotatef(-90,0,1,0)
+        
 
+    #glTranslated(-44,1.5,0)
 
 
     View3D.set_view()
@@ -344,11 +350,11 @@ while True:
 
 
     #glScalef(10,10,10);
-    glTranslated(-2.8,1,2)
-    glRotatef(90,0,1,0)
-    Heart.draw()
-    glRotatef(-90,0,1,0)
-    glTranslated(2.8,-1,2)
+    #glTranslated(-2.8,1,2)
+    #glRotatef(90,0,1,0)
+    #Heart.draw()
+    #glRotatef(-90,0,1,0)
+    #glTranslated(2.8,-1,2)
     #glScalef(0.1,0.1,0.1);
 
     Window.flip()

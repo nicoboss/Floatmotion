@@ -1,3 +1,16 @@
+# Python byte code files
+*.pyc
+
+# Temp Word files
+*~$*.docx
+
+# Other unwanted files
+*.git.7z
+
+# Unwanted directories
+/.dgit/
+/rrr/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -9,6 +22,7 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # Windows Installer files
+*FloatmotionSetup.exe
 *.cab
 *.msi
 *.msm
