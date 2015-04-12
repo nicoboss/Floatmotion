@@ -17,14 +17,13 @@ Sphere texture
     - damage texture
 Sphere Rotation
 """
-import copy
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
+#pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+#pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
 #pygame.mixer.music.play()
 ##pygame.mixer.music.loop()
 
@@ -132,13 +131,13 @@ r=0
 GenerateNewArea_Schutzzeit=0
 Window = glLibWindow(Screen,caption="Float Motion")
 View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
-Statusbar = glLibView2D((0,Screen[1]-100,Screen[0],100),45)
+Statusbar = glLibView3D((0,Screen[1]-100,Screen[0],100),45)
 
 
 glLibTexturing(True)
 
 Camera = glLibCamera([0,0.5,6],[0,0,0])
-Staturbar_Camera = glLibCamera([0,0.5,4],[0,0,0])
+Staturbar_Camera = glLibCamera([0,0,0],[0,0,1])
 
 glLibLighting(False)
 Sun = glLibLight([0,20,20],Camera)
@@ -205,6 +204,19 @@ while True:
                 drawing += 1
                 if drawing == 6:
                     drawing = 0
+
+            #Screenshotspeicherungsfunktion
+            if event.key == K_F5:
+                while True:
+                    try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png")
+                    except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png");break
+                    counter = 1
+                    while True:
+                        try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png")
+                        except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png");break
+                        counter += 1
+                    break #Warscheinlich nutzlos aber f?r die Zukunft.
+
     if key[K_a]: Player.x+=-0.04
     if key[K_w]: Player.y+=0.04
     if key[K_d]: Player.x+=0.04
@@ -227,6 +239,8 @@ while True:
     if key[K_DOWN]: Camera_pos[2]+=1
     if key[K_0]: Camera_pos = [0,0.5,6]
 
+
+
     Camera.set_target_pos(Camera_pos)
     Staturbar_Camera.set_target_pos(Camera_pos)
 
@@ -245,19 +259,21 @@ while True:
 
     #P+=0.001
     #glTranslated(P,-1.5,0)
-
+    glLoadIdentity()
+    glOrtho(0,1280.0,1024.0,0,1,8192)
+    
     for Statusbar_heart in Statusbar_hearts:
-        
+
         #glRotatef(90,0,1,0)
         #glScalef(4,4,4);
         glTranslated(4,0,0)
 
         Heart.draw()
 
-        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)        
+        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
         #glScalef(0.25,0.25,0.25);
         #glRotatef(-90,0,1,0)
-        
+
 
     #glTranslated(-44,1.5,0)
 

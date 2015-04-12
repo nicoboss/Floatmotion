@@ -7,8 +7,8 @@ pygame.init()
 
 Screen = (800,600)
 Window = glLibWindow(Screen,caption="Objects Test")
-View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
-View3D.set_view() 
+View2D = glLibView3D((0,0,Screen[0],Screen[1]),45)
+View2D.set_view()
 
 drawing = 0
 Objects = [glLibObjCube(),
@@ -34,7 +34,7 @@ while True:
                 drawing += 1
                 if drawing == 6:
                     drawing = 0
-            
+
     Window.clear()
     Objects[drawing].draw([0,-0.5,-6],[[0,yrot,0],[xrot,0,0]])
     Window.flip()

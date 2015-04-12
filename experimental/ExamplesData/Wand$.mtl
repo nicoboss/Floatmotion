@@ -1,0 +1,49 @@
+# FILE:Wand$.obj
+newmtl GDLM1_SHADOW_MATERIAL
+Ka 0.228885 0.228885 0.228885
+Kd 0.228885 0.228885 0.228885
+Ks 0 0 0
+illum 2
+Ns 0
+newmtl GDLM2_OPAQUE
+Ka 0 0 0
+Kd 0 0 0
+Ks 0 0 0
+illum 2
+Ns 0
+newmtl PAINT_-_LIGHT_GRAY
+Ka 0.467765 0.467765 0.467765
+Kd 0.540235 0.540235 0.540235
+Ks 0.366667 0.366667 0.366667
+illum 2
+Ns 11
+newmtl PAINT_-_SAND_BEIGE
+Ka 0.671137 0.66102 0.549725
+Kd 0.632118 0.622588 0.517765
+Ks 0.0891005 0.0891005 0.09
+illum 2
+Ns 2.2
+newmtl BRICK_-_RUNNING_BOND
+Ka 0.459804 0.236471 0.197059
+Kd 0.42549 0.218824 0.182353
+Ks 0.152 0.152 0.152
+illum 2
+Ns 0
+map_Ka Brick Running Alpha GS.jpg
+map_Kd Brick Running Alpha GS.jpg
+map_Ks Brick Running Alpha GS.jpg
+newmtl STUCCO_-_YELLOW_ROUGH
+Ka 0.595686 0.538039 0.332157
+Kd 0.706314 0.637961 0.393843
+Ks 0.0793725 0.0774902 0.0759216
+illum 2
+Ns 0
+map_Ka Textured Render Yellow 01 GS.jpg
+map_Kd Textured Render Yellow 01 GS.jpg
+map_Ks Textured Render Yellow 01 GS.jpg
+newmtl PEN_MATERIAL87
+Ka 0.44036 0.44036 0.44036
+Kd 0.44036 0.44036 0.44036
+Ks 0 0 0
+illum 2
+Ns 0

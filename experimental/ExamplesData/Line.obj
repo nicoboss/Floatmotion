@@ -1,0 +1,4 @@
+# FILE Line.obj
+mtllib H:\Line.mtl
+trace_obj Line.obj
+shadow_obj Line.obj

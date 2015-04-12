@@ -15,7 +15,7 @@ def glLibSaveScreenshot(path):
     glPixelStorei(GL_PACK_SKIP_ROWS, 0)
     glPixelStorei(GL_PACK_SKIP_PIXELS, 0)
     data = glReadPixels(0,0,width,height,GL_RGB,GL_UNSIGNED_BYTE)
-    data = data.tostring()
+    data = str(data)
     surface = pygame.image.fromstring(data,(width,height),'RGB',1)
     pygame.image.save(surface,path)
 def glLibUnProject(mouse_pos):

@@ -7,8 +7,8 @@ pygame.init()
 
 Screen = (800,600)
 Window = glLibWindow(Screen,caption="Ortho Test (CURRENTLY NOT IMPLEMENTED)")
-View2D = glLibView2D((0,0,Screen[0],Screen[1]),45)
-View2D.set_view()
+View3D = glLibView2D((0,0,Screen[0],Screen[1]),45)
+View3D.set_view()
 
 Camera = glLibCamera([0,0.5,6],[0,0,0])
 
@@ -16,7 +16,7 @@ glLibLighting(True)
 Sun = glLibLight([0,100,0],Camera)
 Sun.enable()
 
-glLibColorMaterial(True) 
+glLibColorMaterial(True)
 
 drawing = 0
 Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("ExamplesData/UberBall.obj")]
@@ -49,7 +49,7 @@ while True:
     else: Camera.set_target_pos([0,0.5,6])
 
     Camera.update()
-            
+
     Window.clear()
     Camera.set_camera()
     Sun.draw()

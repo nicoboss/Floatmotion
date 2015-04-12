@@ -7,8 +7,8 @@ pygame.init()
 
 Screen = (800,600)
 Window = glLibWindow(Screen,caption="Color Material Test")
-View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
-View3D.set_view()
+View2D = glLibView2D((0,0,Screen[0],Screen[1]),45)
+View2D.set_view()
 
 glLibColorMaterial(True)
 
@@ -38,7 +38,7 @@ while True:
             if event.key == K_5: glLibColor((0,255,0))
             if event.key == K_6: glLibColor((0,0,255))
             if event.key == K_7: glLibColor((128,0,255))
-            
+
     Window.clear()
     Objects[drawing].draw([0,-0.5,-6],[[0,yrot,0],[xrot,0,0]])
     Window.flip()

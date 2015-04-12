@@ -16,7 +16,7 @@ Objects = [glLibObjCube(),
            glLibObjSphere(64),
            glLibObjCylinder(0.5,1.0,64),
            glLibObjCone(0.5,1.8,64),
-           glLibObjFromFile("ExamplesData/UberBall.obj")]
+           glLibObjFromFile("obj/UberBall.obj")]
 
 yrot = 0
 xrot = 0
