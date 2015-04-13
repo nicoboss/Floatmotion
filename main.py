@@ -123,6 +123,20 @@ imagerect = Heart_img.get_rect()
 screen.blit(pygame.transform.scale(Heart_img, (1280, 1024)), (0, 0))
 pygame.display.flip()
 
+
+print(time.clock())
+time.sleep(1)
+BBB=0
+speed=1
+frame_time=time.clock()
+frame_time_alt=time.clock()
+##while True:
+##    frame_time=time.clock()
+##    speed=(frame_time-frame_time_alt)*60
+##    print speed
+##    frame_time_alt=frame_time
+##    time.sleep(0.1)
+#print(time.clock()-AAA)
 random.seed(time.clock())
 Screen = (1280,1024)
 Cube_speed_z=0.1
@@ -244,9 +258,9 @@ while True:
     Camera.set_target_pos(Camera_pos)
     Staturbar_Camera.set_target_pos(Camera_pos)
 
-    Player.x+=Player.speed_x
-    Player.y+=Player.speed_y
-    Player.z+=Player.speed_z
+    Player.x+=Player.speed_x*speed
+    Player.y+=Player.speed_y*speed
+    Player.z+=Player.speed_z*speed
 
     Camera.update()
     Staturbar_Camera.update()
@@ -295,7 +309,7 @@ while True:
 
     #BGround.x=-0.25
     #BGround.y=-0.25
-    BGround.z+=0.01
+    BGround.z+=0.01*speed
     glScalef(10,10,10);
     glTranslated(BGround.x,BGround.y,BGround.z)
     BGround.draw()
@@ -317,18 +331,18 @@ while True:
             GenerateNewArea=Cube.z-100
             Cubes.pop(Object_ID)
         if(SphereRectCollision(Player,Cube)==1):
-            for i in range(300):
+            for i in range(int(round(300/speed))):
                 x=random.uniform(-Cube_speed_z,Cube_speed_z)
                 y=random.uniform(-Cube_speed_z,Cube_speed_z)
                 z=random.uniform(-Cube_speed_z,Cube_speed_z)
                 magnitude  = sqrt(x**2 + y**2 + z**2)
-                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,200))
+                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,round(200/speed)))
             Cubes.pop(Object_ID)
 
     for Cube in Cubes:
-        Cube.x+=Cube.speed_x
-        Cube.y+=Cube.speed_y
-        Cube.z+=Cube.speed_z
+        Cube.x+=Cube.speed_x*speed
+        Cube.y+=Cube.speed_y*speed
+        Cube.z+=Cube.speed_z*speed
         glTranslated(Cube.x,Cube.y,Cube.z)
         glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
         Cube.draw()
@@ -337,9 +351,9 @@ while True:
     Object_ID=-1
     for Particle in Particles:
         Object_ID+=1
-        Particle.x+=Particle.speed_x
-        Particle.y+=Particle.speed_y
-        Particle.z+=Particle.speed_z
+        Particle.x+=Particle.speed_x*speed
+        Particle.y+=Particle.speed_y*speed
+        Particle.z+=Particle.speed_z*speed
         glTranslated(Particle.x,Particle.y,Particle.z)
         glLibColor((Particle.r,Particle.g,Particle.b,Particle.a))
         Particle.draw()
@@ -373,12 +387,17 @@ while True:
     #glTranslated(2.8,-1,2)
     #glScalef(0.1,0.1,0.1);
 
+    frame_time=time.clock()
+    speed=(frame_time-frame_time_alt)*60
+    #print speed
+    frame_time_alt=frame_time
+    
     Window.flip()
 
 
     GenerateNewArea_Schutzzeit-=1
     if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
-        GenerateNewArea_Schutzzeit=20
+        GenerateNewArea_Schutzzeit=3
         for x in range(-1,2):
             for y in range(-1,2):
                 if(random.randint(0,100)>50):
