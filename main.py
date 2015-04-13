@@ -8,11 +8,6 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-Particles
-    - Random direction
-    - Fix duration (object preporrieies)
-    - Half Random Speed
-    - Liddles Cubes wit Half Fix size
 Sphere texture
     - damage texture
 Sphere Rotation
@@ -29,6 +24,21 @@ from OpenGLLibrary import *
 
 Camera_pos = [0,0.5,6]
 
+class glLibObjHeart:
+    def __init__(self,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,time=-1):
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
+
+        self.r=r
+        self.g=g
+        self.b=b
+        self.a=a
+
+        self.time=time
 
 class glLibObjStatusbar_heart:
     def __init__(self,x=0,y=0,z=0,rotate_x=0,rotate_y=0,rotate_z=0):
@@ -139,7 +149,7 @@ frame_time_alt=time.clock()
 #print(time.clock()-AAA)
 random.seed(time.clock())
 Screen = (1280,1024)
-Cube_speed_z=0.1
+Cube_speed_z=0.05
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
@@ -172,12 +182,15 @@ drawing = 0
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Texture = glLibTexture("textures/Oak Ligh.bmp")
 Statusbar_hearts = []
+Hearts = []
+Heart_Cubes = []
 Cubes = []
 Particles = []
+Stars = []
 
 BGround = glLibObjFromFile("obj/leer.obj")
 
-Heart = glLibObjFromFile("obj/Heart.obj")
+Heart_obj = glLibObjFromFile("obj/Heart.obj")
 
 #time.sleep(2)
 
@@ -191,18 +204,27 @@ for x in range(0,10):
 
 
 Cubes_count=0
+Hearts_count=0
 for z in range(-110,-10,10):
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(0,100)>50):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
                 Cubes_count+=1
+            else:
+                if(random.randint(0,100)>80):
+                    Hearts.append(glLibObjHeart(x,y,z,0,0,Cube_speed_z,255,0,0,Transparence))
+                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
+                    Hearts_count+=1
+                
 
 #if(Cubes_count==9):
 
 #glClearColor( 1, 1, 1, 1)
 
 P=-40
+
+#glDisable(GL_DEPTH_TEST) #Ich mache dies lieber selbst!
 
 while True:
     key = pygame.key.get_pressed()
@@ -281,8 +303,7 @@ while True:
         #glRotatef(90,0,1,0)
         #glScalef(4,4,4);
         glTranslated(4,0,0)
-
-        Heart.draw()
+        Heart_obj.draw()
 
         #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
         #glScalef(0.25,0.25,0.25);
@@ -322,9 +343,30 @@ while True:
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
     GenerateNewArea=0
+    
     Object_ID=-1
+    for Cube in Heart_Cubes:
+        Object_ID+=1
+        if(Cube.z>5):
+            #GenerateNewArea=Cube.z-100
+            Heart_Cubes.pop(Object_ID)
+        if(SphereRectCollision(Player,Cube)==1):
+            for i in range(int(round(300/speed))):
+                x=random.uniform(-Cube_speed_z,Cube_speed_z)
+                y=random.uniform(-Cube_speed_z,Cube_speed_z)
+                z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                magnitude  = sqrt(x**2 + y**2 + z**2)
+                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,2,round(200/speed)))
+            Heart_Cubes.pop(Object_ID)
 
+    Object_ID=-1
+    for Heart in Hearts:
+        Object_ID+=1
+        if(Heart.z>5):
+            #GenerateNewArea=Cube.z-100
+            Hearts.pop(Object_ID)
 
+    Object_ID=-1
     for Cube in Cubes:
         Object_ID+=1
         if(Cube.z>5):
@@ -336,17 +378,80 @@ while True:
                 y=random.uniform(-Cube_speed_z,Cube_speed_z)
                 z=random.uniform(-Cube_speed_z,Cube_speed_z)
                 magnitude  = sqrt(x**2 + y**2 + z**2)
-                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,round(200/speed)))
+                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,2,round(200/speed)))
             Cubes.pop(Object_ID)
+
+
+##    for Cube in Heart_Cubes:
+##        Cube.x+=Cube.speed_x*speed
+##        Cube.y+=Cube.speed_y*speed
+##        Cube.z+=Cube.speed_z*speed
+##        glTranslated(Cube.x,Cube.y,Cube.z)
+##        glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
+##        Cube.draw()
+##        glTranslated(-Cube.x,-Cube.y,-Cube.z)
+
+##    for Heart in Hearts:
+##        Heart.x+=Heart.speed_x*speed
+##        Heart.y+=Heart.speed_y*speed
+##        Heart.z+=Heart.speed_z*speed
+##
+##        glTranslated(Heart.x,Heart.y-0.5,Heart.z)
+##        glRotatef(90,0,1,0)
+##        glScalef(0.5,0.5,0.5);
+##        glLibColor((Heart.r,Heart.g,Heart.b,Heart.a))
+##        Heart_obj.draw()
+##        glScalef(2,2,2);
+##        glRotatef(-90,0,1,0)
+##        glTranslated(-Heart.x,-Heart.y+0.5,-Heart.z)
+
+
+
+##    for Cube in Heart_Cubes:
+##        Cube.x+=Cube.speed_x*speed
+##        Cube.y+=Cube.speed_y*speed
+##        Cube.z+=Cube.speed_z*speed
+##        glTranslated(Cube.x,Cube.y,Cube.z)
+##        glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
+##        Cube.draw()
+##        glTranslated(-Cube.x,-Cube.y,-Cube.z)
+
+##    for Heart in Hearts:
+##        Heart.x+=Heart.speed_x*speed
+##        Heart.y+=Heart.speed_y*speed
+##        Heart.z+=Heart.speed_z*speed
+##
+##        glTranslated(Heart.x,Heart.y-0.5,Heart.z)
+##        glRotatef(90,0,1,0)
+##        glScalef(0.5,0.5,0.5);
+##        glLibColor((Heart.r,Heart.g,Heart.b,Heart.a))
+##        Heart_obj.draw()
+##        glScalef(2,2,2);
+##        glRotatef(-90,0,1,0)
+##        glTranslated(-Heart.x,-Heart.y+0.5,-Heart.z)
 
     for Cube in Cubes:
         Cube.x+=Cube.speed_x*speed
         Cube.y+=Cube.speed_y*speed
         Cube.z+=Cube.speed_z*speed
+        if(Cube.cube_type==1): #Herz
+            glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.2)
+            glRotatef(90,0,1,0)
+            glScalef(0.5,0.5,0.5);
+            glLibColor((255,0,0,255))
+            Heart_obj.draw() #Wichtig: Herz vor Würfel da sonst unsichtbar
+            glScalef(2,2,2);
+            glRotatef(-90,0,1,0)
+            glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.2)
+            
         glTranslated(Cube.x,Cube.y,Cube.z)
         glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
         Cube.draw()
         glTranslated(-Cube.x,-Cube.y,-Cube.z)
+        
+       
+                
+        
 
     Object_ID=-1
     for Particle in Particles:
@@ -402,6 +507,10 @@ while True:
             for y in range(-1,2):
                 if(random.randint(0,100)>50):
                     Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
-
+                else:
+                    if(random.randint(0,100)>80):
+                        Hearts.append(glLibObjHeart(x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,Transparence))
+                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,100,1))
+                        Hearts_count+=1
 
 
