@@ -17,7 +17,8 @@ glLibTexturing(True)
 
 Camera = glLibCamera([0,0,16],[0,0,0])
 
-Hello = glLibObjText("Hello!",Font,(255,255,255))
+Hello = glLibObjText("Level 1   Leben: 3   Sterne: 10   Zeit: 12:22",Font,(111,255,255))
+    
 
 def GetInput():
     global drawing
@@ -42,6 +43,9 @@ def Draw():
     Window.flip()
 def main():
     while True:
+        
+        Hello = glLibObjText("Level 1   Leben: 3   Sterne: 10   Zeit: 12:22",Font,(111,255,255))
+    
         GetInput()
         Update()
         Draw()

@@ -24,30 +24,9 @@ from OpenGLLibrary import *
 
 Camera_pos = [0,0.5,6]
 
-class glLibObjHeart:
-    def __init__(self,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,time=-1):
-        self.x=x
-        self.y=y
-        self.z=z
-        self.speed_x=speed_x
-        self.speed_y=speed_y
-        self.speed_z=speed_z
 
-        self.r=r
-        self.g=g
-        self.b=b
-        self.a=a
 
-        self.time=time
 
-class glLibObjStatusbar_heart:
-    def __init__(self,x=0,y=0,z=0,rotate_x=0,rotate_y=0,rotate_z=0):
-        self.x=x
-        self.y=y
-        self.z=z
-        self.rotate_x=rotate_x
-        self.rotate_y=rotate_y
-        self.rotate_z=rotate_z
 
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
@@ -115,7 +94,6 @@ def SphereRectCollision(sphere, rect):
     return (cornerDistance_sq < (sphere.radius * sphere.radius))
 
 
-
 listener = SampleListener()
 controller = Leap.Controller()
 
@@ -133,10 +111,6 @@ imagerect = Heart_img.get_rect()
 screen.blit(pygame.transform.scale(Heart_img, (1280, 1024)), (0, 0))
 pygame.display.flip()
 
-
-print(time.clock())
-time.sleep(1)
-BBB=0
 speed=1
 frame_time=time.clock()
 frame_time_alt=time.clock()
@@ -153,9 +127,9 @@ Cube_speed_z=0.05
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
-Window = glLibWindow(Screen,caption="Float Motion")
+Window = glLibWindow(Screen,caption="Float Motion - Nico Bosshard")
 View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
-Statusbar = glLibView3D((0,Screen[1]-100,Screen[0],100),45)
+Statusbar = glLibView2D((0,Screen[1]-100,Screen[0],100),45)
 
 
 glLibTexturing(True)
@@ -177,13 +151,14 @@ drawing = 0
 #Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("obj/Tunnel.obj")]
 
 #time.sleep(2)
+#Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
+#Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
 
+#Level_Text = glLibObjText("Level 1",Font_ALGER_72,(255,128,50))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Texture = glLibTexture("textures/Oak Ligh.bmp")
 Statusbar_hearts = []
-Hearts = []
-Heart_Cubes = []
 Cubes = []
 Particles = []
 Stars = []
@@ -198,11 +173,6 @@ Heart_obj = glLibObjFromFile("obj/Heart.obj")
 #    print v
 #print Heart.list
 
-for x in range(0,10):
-    Statusbar_hearts.append(glLibObjStatusbar_heart(x*10,-3,0,0,0,0))
-    #glLibObjStatusbar_heart.list=copy.copy(Heart.list)
-
-
 Cubes_count=0
 Hearts_count=0
 for z in range(-110,-10,10):
@@ -213,7 +183,6 @@ for z in range(-110,-10,10):
                 Cubes_count+=1
             else:
                 if(random.randint(0,100)>80):
-                    Hearts.append(glLibObjHeart(x,y,z,0,0,Cube_speed_z,255,0,0,Transparence))
                     Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
                     Hearts_count+=1
                 
@@ -224,7 +193,8 @@ for z in range(-110,-10,10):
 
 P=-40
 
-#glDisable(GL_DEPTH_TEST) #Ich mache dies lieber selbst!
+glEnable(GL_DEPTH_TEST)
+#glDisable(GL_DEPTH_TEST)
 
 while True:
     key = pygame.key.get_pressed()
@@ -251,7 +221,7 @@ while True:
                         try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png")
                         except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png");break
                         counter += 1
-                    break #Warscheinlich nutzlos aber f?r die Zukunft.
+                    break #Warscheinlich nutzlos aber für die Zukunft.
 
     if key[K_a]: Player.x+=-0.04
     if key[K_w]: Player.y+=0.04
@@ -295,15 +265,41 @@ while True:
 
     #P+=0.001
     #glTranslated(P,-1.5,0)
-    glLoadIdentity()
-    glOrtho(0,1280.0,1024.0,0,1,8192)
     
+    #Level_Text.draw()
+
+    #glDisable(GL_DEPTH_TEST)
+    # store the projection matrix to restore later
+    #glMatrixMode(GL_PROJECTION)
+    #glPushMatrix()
+    # load orthographic projection matrix
+    #glLoadIdentity()
+    #glOrtho(0, float(self.width),0, float(self.height), 0, 1)
+    #far=8192
+    #glOrtho(-1280/2.,1024/2.,-1024/2.,1280/2.,0,far)
+    # reset modelview
+    #glMatrixMode(GL_MODELVIEW)
+    #glLoadIdentity()
+    #glClear(GL_COLOR_BUFFER_BIT)
+
+##    z=-6
+##    n=100
+##    glTranslatef(0,0.0,-z)
+##    glBegin(GL_TRIANGLES)
+##    glVertex3f(0.0,n,0.0)
+##    glVertex3f(-n,-n,0)
+##    glVertex3f(n,-n,0)
+##    glEnd()
+
+    Heart_obj.draw()
+
     for Statusbar_heart in Statusbar_hearts:
 
         #glRotatef(90,0,1,0)
         #glScalef(4,4,4);
         glTranslated(4,0,0)
         Heart_obj.draw()
+        Level_Text.draw()
 
         #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
         #glScalef(0.25,0.25,0.25);
@@ -343,29 +339,6 @@ while True:
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
     GenerateNewArea=0
-    
-    Object_ID=-1
-    for Cube in Heart_Cubes:
-        Object_ID+=1
-        if(Cube.z>5):
-            #GenerateNewArea=Cube.z-100
-            Heart_Cubes.pop(Object_ID)
-        if(SphereRectCollision(Player,Cube)==1):
-            for i in range(int(round(300/speed))):
-                x=random.uniform(-Cube_speed_z,Cube_speed_z)
-                y=random.uniform(-Cube_speed_z,Cube_speed_z)
-                z=random.uniform(-Cube_speed_z,Cube_speed_z)
-                magnitude  = sqrt(x**2 + y**2 + z**2)
-                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,2,round(200/speed)))
-            Heart_Cubes.pop(Object_ID)
-
-    Object_ID=-1
-    for Heart in Hearts:
-        Object_ID+=1
-        if(Heart.z>5):
-            #GenerateNewArea=Cube.z-100
-            Hearts.pop(Object_ID)
-
     Object_ID=-1
     for Cube in Cubes:
         Object_ID+=1
@@ -382,75 +355,25 @@ while True:
             Cubes.pop(Object_ID)
 
 
-##    for Cube in Heart_Cubes:
-##        Cube.x+=Cube.speed_x*speed
-##        Cube.y+=Cube.speed_y*speed
-##        Cube.z+=Cube.speed_z*speed
-##        glTranslated(Cube.x,Cube.y,Cube.z)
-##        glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
-##        Cube.draw()
-##        glTranslated(-Cube.x,-Cube.y,-Cube.z)
-
-##    for Heart in Hearts:
-##        Heart.x+=Heart.speed_x*speed
-##        Heart.y+=Heart.speed_y*speed
-##        Heart.z+=Heart.speed_z*speed
-##
-##        glTranslated(Heart.x,Heart.y-0.5,Heart.z)
-##        glRotatef(90,0,1,0)
-##        glScalef(0.5,0.5,0.5);
-##        glLibColor((Heart.r,Heart.g,Heart.b,Heart.a))
-##        Heart_obj.draw()
-##        glScalef(2,2,2);
-##        glRotatef(-90,0,1,0)
-##        glTranslated(-Heart.x,-Heart.y+0.5,-Heart.z)
-
-
-
-##    for Cube in Heart_Cubes:
-##        Cube.x+=Cube.speed_x*speed
-##        Cube.y+=Cube.speed_y*speed
-##        Cube.z+=Cube.speed_z*speed
-##        glTranslated(Cube.x,Cube.y,Cube.z)
-##        glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
-##        Cube.draw()
-##        glTranslated(-Cube.x,-Cube.y,-Cube.z)
-
-##    for Heart in Hearts:
-##        Heart.x+=Heart.speed_x*speed
-##        Heart.y+=Heart.speed_y*speed
-##        Heart.z+=Heart.speed_z*speed
-##
-##        glTranslated(Heart.x,Heart.y-0.5,Heart.z)
-##        glRotatef(90,0,1,0)
-##        glScalef(0.5,0.5,0.5);
-##        glLibColor((Heart.r,Heart.g,Heart.b,Heart.a))
-##        Heart_obj.draw()
-##        glScalef(2,2,2);
-##        glRotatef(-90,0,1,0)
-##        glTranslated(-Heart.x,-Heart.y+0.5,-Heart.z)
-
     for Cube in Cubes:
         Cube.x+=Cube.speed_x*speed
         Cube.y+=Cube.speed_y*speed
         Cube.z+=Cube.speed_z*speed
-        if(Cube.cube_type==1): #Herz
-            glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.2)
+        if(Cube.cube_type==1): #Herzz
+            glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.8)
             glRotatef(90,0,1,0)
             glScalef(0.5,0.5,0.5);
             glLibColor((255,0,0,255))
             Heart_obj.draw() #Wichtig: Herz vor Würfel da sonst unsichtbar
             glScalef(2,2,2);
             glRotatef(-90,0,1,0)
-            glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.2)
+            glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.8)
             
         glTranslated(Cube.x,Cube.y,Cube.z)
         glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
         Cube.draw()
         glTranslated(-Cube.x,-Cube.y,-Cube.z)
         
-       
-                
         
 
     Object_ID=-1
@@ -484,14 +407,6 @@ while True:
     #glRotatef(-10,Player.x,Player.y,Player.z)
 
 
-    #glScalef(10,10,10);
-    #glTranslated(-2.8,1,2)
-    #glRotatef(90,0,1,0)
-    #Heart.draw()
-    #glRotatef(-90,0,1,0)
-    #glTranslated(2.8,-1,2)
-    #glScalef(0.1,0.1,0.1);
-
     frame_time=time.clock()
     speed=(frame_time-frame_time_alt)*60
     #print speed
@@ -509,7 +424,6 @@ while True:
                     Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
                 else:
                     if(random.randint(0,100)>80):
-                        Hearts.append(glLibObjHeart(x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,Transparence))
                         Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,100,1))
                         Hearts_count+=1
 
