@@ -170,7 +170,10 @@ Stars = []
 
 BGround = glLibObjFromFile("obj/leer.obj")
 
-Heart_obj = glLibObjFromFile("obj/Heart.obj")
+Star_obj = glLibObjFromFile("obj/Star.obj")
+Heart_obj = glLibObjFromFile("obj/Star.obj")
+#Heart_obj = glLibObjFromFile("obj/Heart.obj")
+
 
 #time.sleep(2)
 
@@ -178,21 +181,23 @@ Heart_obj = glLibObjFromFile("obj/Heart.obj")
 #    print v
 #print Heart.list
 
-Cubes_count=0
-Hearts_count=0
+
 for z in range(-110,-10,10):
+    Cubes_count=0
+    Hearts_count=0
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(0,100)>50):
                 Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
                 Cubes_count+=1
             else:
-                if(random.randint(0,100)>80):
+                if(random.randint(0,100)>90):
                     Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
                     Hearts_count+=1
                 
 
-#if(Cubes_count==9):
+    #if(Cubes_count==9):
+    #    Cubes
 
 #glClearColor( 1, 1, 1, 1)
 
@@ -231,26 +236,26 @@ while True:
                         counter += 1
                     break #Warscheinlich nutzlos aber für die Zukunft.
 
-    if key[K_a]: Player.x+=-0.04
-    if key[K_w]: Player.y+=0.04
-    if key[K_d]: Player.x+=0.04
-    if key[K_s]: Player.y+=-0.04
+    if key[K_a]: Player.x+=-0.01*speed
+    if key[K_w]: Player.y+=0.01*speed
+    if key[K_d]: Player.x+=0.01*speed
+    if key[K_s]: Player.y+=-0.01*speed
 
-    if key[K_j]: Player.speed_x+=-0.001
-    if key[K_i]: Player.speed_y+=0.001
-    if key[K_l]: Player.speed_x+=0.001
-    if key[K_k]: Player.speed_y+=-0.001
-    if key[K_o]: Player.speed_z+=0.001
-    if key[K_p]: Player.speed_z+=-0.001
+    if key[K_j]: Player.speed_x+=-0.0005*speed
+    if key[K_i]: Player.speed_y+=0.0005*speed
+    if key[K_l]: Player.speed_x+=0.0005*speed
+    if key[K_k]: Player.speed_y+=-0.0005*speed
+    if key[K_o]: Player.speed_z+=0.0005*speed
+    if key[K_p]: Player.speed_z+=-0.0005*speed
 ##    if   key[K_LEFT]: Camera.set_target_pos([-6,0.5,0])
 ##    elif key[K_RIGHT]: Camera.set_target_pos([6,0.5,0])
 ##    elif key[K_UP]: Camera.set_target_pos([0,6,2])
 ##    elif key[K_DOWN]: Camera.set_target_pos([0,-6,2])
 ##    else: Camera.set_target_pos([0,0.5,6])
-    if key[K_LEFT]: Camera_pos[0]-=1
-    if key[K_RIGHT]: Camera_pos[0]+=1
-    if key[K_UP]: Camera_pos[2]-=1
-    if key[K_DOWN]: Camera_pos[2]+=1
+    if key[K_LEFT]: Camera_pos[0]-=1*speed
+    if key[K_RIGHT]: Camera_pos[0]+=1*speed
+    if key[K_UP]: Camera_pos[2]-=1*speed
+    if key[K_DOWN]: Camera_pos[2]+=1*speed
     if key[K_0]: Camera_pos = [0,0.5,6]
 
 
