@@ -17,10 +17,10 @@ from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-#pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-#pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
-#pygame.mixer.music.play()
-##pygame.mixer.music.loop()
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
+pygame.mixer.music.play()
+#pygame.mixer.music.loop()
 
 Camera_pos = [0,0.5,6]
 
@@ -31,6 +31,25 @@ Sterne=0
 Zeit=0
 Startzeit=0
 
+class glLibObjStar:
+    def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,star_type=0,time=-1):
+        self.size=size
+
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
+
+        self.r=r
+        self.g=g
+        self.b=b
+        self.a=a
+
+        self.star_type=star_type
+        self.time=time
+        
 
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
@@ -171,8 +190,7 @@ Stars = []
 BGround = glLibObjFromFile("obj/leer.obj")
 
 Star_obj = glLibObjFromFile("obj/Star.obj")
-Heart_obj = glLibObjFromFile("obj/Star.obj")
-#Heart_obj = glLibObjFromFile("obj/Heart.obj")
+Heart_obj = glLibObjFromFile("obj/Heart.obj")
 
 
 #time.sleep(2)
@@ -187,11 +205,11 @@ for z in range(-110,-10,10):
     Hearts_count=0
     for x in range(-1,2):
         for y in range(-1,2):
-            if(random.randint(0,100)>50):
+            if(random.randint(1,100)>50):
                 Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
                 Cubes_count+=1
             else:
-                if(random.randint(0,100)>90):
+                if(random.randint(1,100)>90):
                     Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
                     Hearts_count+=1
                 
@@ -199,6 +217,21 @@ for z in range(-110,-10,10):
     #if(Cubes_count==9):
     #    Cubes
 
+for i in range(400):
+    #Die follgenden if-Bedingungen sind zum verhindern von Sternen in der Würfelzone.
+    if(random.randint(1,100)>50):
+        Star_x=random.uniform(-20,-2)
+    else:
+        Star_x=random.uniform(2,20)
+
+    if(random.randint(1,100)>50):
+        Star_y=random.uniform(-20,-2)
+    else:
+        Star_y=random.uniform(2,20)
+    
+    Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+
+    
 #glClearColor( 1, 1, 1, 1)
 
 P=-40
@@ -389,6 +422,26 @@ while True:
                 Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
             Cubes.pop(Object_ID)
 
+
+    #Hier habe ich absichtlich Star_obj.draw() und Stars.pop() in die gleiche for Star in Stars Schleife gemacht da dadurch viele Ressourcen gespart sowie durch das unsaubere Löschen coole Blinkeffekte entstehen.
+    Object_ID=-1          
+    for Star in Stars:
+        Object_ID+=1
+        if(Star.z>5):
+            Stars.pop(Object_ID)
+            Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+        Star.x+=Star.speed_x*speed
+        Star.y+=Star.speed_y*speed
+        Star.z+=Star.speed_z*speed
+        glTranslated(Star.x,Star.y-0.8,Star.z+0.8)
+        glRotatef(90,1,0,0)
+        glScalef(Star.size,Star.size,Star.size);
+        glLibColor((Star.x,Star.y,Star.z))
+        Star_obj.draw()
+        glScalef(1/Star.size,1/Star.size,1/Star.size);
+        glRotatef(-90,1,0,0)
+        glTranslated(-Star.x,-Star.y+0.8,-Star.z-0.8)
+        
 
     Object_ID=-1
     for Particle in Particles:
