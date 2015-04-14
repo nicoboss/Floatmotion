@@ -26,6 +26,7 @@ Camera_pos = [0,0.5,6]
 
 Level=1
 Leben=7
+Player_Schutzzeit=0
 Sterne=0
 Zeit=0
 Startzeit=0
@@ -345,6 +346,7 @@ while True:
 ##    BGround.draw(n)
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
+    Player_Schutzzeit-=1
     GenerateNewArea=0
     Object_ID=-1
     for Cube in Cubes:
@@ -356,48 +358,32 @@ while True:
             if(Cube.cube_type==1):
                 Leben+=1
             else:
-                Leben-=1
+                if(Player_Schutzzeit<0):
+                    Player_Schutzzeit=4
+                    Leben-=1
+                    print Leben
+                
                 if(Leben==0):
                     print 'Tot!'
+                    for Cube in Cubes:
+                        Cube.z-=60
+                        
                     for i in range(int(round(600/speed))):
                         x=random.uniform(-Cube_speed_z,Cube_speed_z)
                         y=random.uniform(-Cube_speed_z,Cube_speed_z)
                         z=random.uniform(-Cube_speed_z,Cube_speed_z)
                         magnitude  = sqrt(x**2 + y**2 + z**2)
-                        Player_Particles.append(glLibObjTexSphere(0.06,0,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,0,0,0,2,round(200/speed)))
+                        Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
-            print Leben
-
-            
+            #if(Leben>0):
             for i in range(int(round(300/speed))):
                 x=random.uniform(-Cube_speed_z,Cube_speed_z)
                 y=random.uniform(-Cube_speed_z,Cube_speed_z)
                 z=random.uniform(-Cube_speed_z,Cube_speed_z)
                 magnitude  = sqrt(x**2 + y**2 + z**2)
-                Particles.append(glLibObjCube(0.06,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,2,round(200/speed)))
+                Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
             Cubes.pop(Object_ID)
 
-
-    for Cube in Cubes:
-        Cube.x+=Cube.speed_x*speed
-        Cube.y+=Cube.speed_y*speed
-        Cube.z+=Cube.speed_z*speed
-        if(Cube.cube_type==1): #Herzz
-            glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.8)
-            glRotatef(90,0,1,0)
-            glScalef(0.5,0.5,0.5);
-            glLibColor((255,0,0,255))
-            Heart_obj.draw() #Wichtig: Herz vor Würfel da sonst unsichtbar
-            glScalef(2,2,2);
-            glRotatef(-90,0,1,0)
-            glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.8)
-            
-        glTranslated(Cube.x,Cube.y,Cube.z)
-        glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
-        Cube.draw()
-        glTranslated(-Cube.x,-Cube.y,-Cube.z)
-        
-        
 
     Object_ID=-1
     for Particle in Particles:
@@ -413,6 +399,7 @@ while True:
         if(Particle.time==0):
             Particles.pop(Object_ID)
 
+
     if(Leben==0):
         Object_ID=-1
         for Particle in Player_Particles:
@@ -426,8 +413,31 @@ while True:
             glTranslated(-Particle.x,-Particle.y,-Particle.z)
             Particle.time-=1
             if(Particle.time==0):
-                Particles.pop(Object_ID)
+                Player_Particles.pop(Object_ID)
+        if(Object_ID==-1):
+            Leben=3
     else:
+
+
+        for Cube in Cubes:
+            Cube.x+=Cube.speed_x*speed
+            Cube.y+=Cube.speed_y*speed
+            Cube.z+=Cube.speed_z*speed
+            if(Cube.cube_type==1): #Herzz
+                glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.8)
+                glRotatef(90,0,1,0)
+                glScalef(0.5,0.5,0.5);
+                glLibColor((255,0,0,255))
+                Heart_obj.draw() #Wichtig: Herz vor Würfel da sonst unsichtbar
+                glScalef(2,2,2);
+                glRotatef(-90,0,1,0)
+                glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.8)
+                
+            glTranslated(Cube.x,Cube.y,Cube.z)
+            glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
+            Cube.draw()
+            glTranslated(-Cube.x,-Cube.y,-Cube.z)
+            
         glLibColor((255,255,255,255))
         glTranslated(Player.x,Player.y,Player.z)
         #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
@@ -440,9 +450,23 @@ while True:
         glRotatef(Player.rotate_z,1,0,0)
         #print Player.speed_x*10000
         Player.draw()
+        #glRotatef(-Player.rotate_x,0,1,0)
+        #glRotatef(Player.rotate_y,1,0,0)
+        #glRotatef(-Player.rotate_z,1,0,0)
+
         glTranslated(-Player.x,-Player.y,-Player.z)
+
+        
         #glTranslated(-Player.x,-Player.y,-Player.z)
         #glRotatef(-10,Player.x,Player.y,Player.z)
+
+        
+        
+
+
+
+
+
 
 
     frame_time=time.clock()
