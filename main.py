@@ -24,8 +24,11 @@ from OpenGLLibrary import *
 
 Camera_pos = [0,0.5,6]
 
-
-
+Level=1
+Leben=7
+Sterne=0
+Zeit=0
+Startzeit=0
 
 
 class SampleListener(Leap.Listener):
@@ -157,6 +160,7 @@ drawing = 0
 #Level_Text = glLibObjText("Level 1",Font_ALGER_72,(255,128,50))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
+Player_Particles = []
 Texture = glLibTexture("textures/Oak Ligh.bmp")
 Statusbar_hearts = []
 Cubes = []
@@ -195,6 +199,9 @@ P=-40
 
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
+
+
+Startzeit=time.clock()
 
 while True:
     key = pygame.key.get_pressed()
@@ -335,7 +342,7 @@ while True:
 
 
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
-##    BGround.draw()
+##    BGround.draw(n)
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
     GenerateNewArea=0
@@ -346,6 +353,22 @@ while True:
             GenerateNewArea=Cube.z-100
             Cubes.pop(Object_ID)
         if(SphereRectCollision(Player,Cube)==1):
+            if(Cube.cube_type==1):
+                Leben+=1
+            else:
+                Leben-=1
+                if(Leben==0):
+                    print 'Tot!'
+                    for i in range(int(round(600/speed))):
+                        x=random.uniform(-Cube_speed_z,Cube_speed_z)
+                        y=random.uniform(-Cube_speed_z,Cube_speed_z)
+                        z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                        magnitude  = sqrt(x**2 + y**2 + z**2)
+                        Player_Particles.append(glLibObjTexSphere(0.06,0,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(25,35), y/magnitude/random.uniform(25,35), z/magnitude/random.uniform(25,35),Cube.r,Cube.g,Cube.b,Transparence,0,0,0,2,round(200/speed)))
+
+            print Leben
+
+            
             for i in range(int(round(300/speed))):
                 x=random.uniform(-Cube_speed_z,Cube_speed_z)
                 y=random.uniform(-Cube_speed_z,Cube_speed_z)
@@ -390,21 +413,36 @@ while True:
         if(Particle.time==0):
             Particles.pop(Object_ID)
 
-    glLibColor((255,255,255,255))
-    glTranslated(Player.x,Player.y,Player.z)
-    #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
-    Player.rotate_x+=Player.speed_x*100
-    Player.rotate_y+=Player.speed_y*100
-    Player.rotate_z+=Player.speed_z*100
-    #if not (Player.speed_x==0 and Player.speed_y==0 and Player.speed_z==0):
-    glRotatef(Player.rotate_x,0,1,0)
-    glRotatef(-Player.rotate_y,1,0,0)
-    glRotatef(Player.rotate_z,1,0,0)
-    #print Player.speed_x*10000
-    Player.draw()
-    glTranslated(-Player.x,-Player.y,-Player.z)
-    #glTranslated(-Player.x,-Player.y,-Player.z)
-    #glRotatef(-10,Player.x,Player.y,Player.z)
+    if(Leben==0):
+        Object_ID=-1
+        for Particle in Player_Particles:
+            Object_ID+=1
+            Particle.x+=Particle.speed_x*speed
+            Particle.y+=Particle.speed_y*speed
+            Particle.z+=Particle.speed_z*speed
+            glTranslated(Particle.x,Particle.y,Particle.z)
+            glLibColor((Particle.r,Particle.g,Particle.b,Particle.a))
+            Particle.draw()
+            glTranslated(-Particle.x,-Particle.y,-Particle.z)
+            Particle.time-=1
+            if(Particle.time==0):
+                Particles.pop(Object_ID)
+    else:
+        glLibColor((255,255,255,255))
+        glTranslated(Player.x,Player.y,Player.z)
+        #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
+        Player.rotate_x+=Player.speed_x*100
+        Player.rotate_y+=Player.speed_y*100
+        Player.rotate_z+=Player.speed_z*100
+        #if not (Player.speed_x==0 and Player.speed_y==0 and Player.speed_z==0):
+        glRotatef(Player.rotate_x,0,1,0)
+        glRotatef(-Player.rotate_y,1,0,0)
+        glRotatef(Player.rotate_z,1,0,0)
+        #print Player.speed_x*10000
+        Player.draw()
+        glTranslated(-Player.x,-Player.y,-Player.z)
+        #glTranslated(-Player.x,-Player.y,-Player.z)
+        #glRotatef(-10,Player.x,Player.y,Player.z)
 
 
     frame_time=time.clock()

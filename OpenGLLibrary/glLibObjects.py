@@ -134,7 +134,7 @@ class glLibObjSphere(glLibObj):
         gluSphere(Sphere,1.0,detail,detail)
         glEndList()
 class glLibObjTexSphere(glLibObj):
-    def __init__(self,radius,detail,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,rotate_x=0,rotate_y=0,rotate_z=0):
+    def __init__(self,radius,detail,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,rotate_x=0,rotate_y=0,rotate_z=0,sphere_type=0,time=-1):
         self.radius=radius
         self.detail=detail
 
@@ -153,6 +153,9 @@ class glLibObjTexSphere(glLibObj):
         self.rotate_x=rotate_x
         self.rotate_y=rotate_y
         self.rotate_z=rotate_z
+
+        self.sphere_type=sphere_type
+        self.time=time
 
         self.list = glGenLists(1)
         glNewList(self.list, GL_COMPILE)
