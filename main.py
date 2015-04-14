@@ -317,6 +317,10 @@ while True:
 
     #glLibTexturing(True)
 
+    #Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
+    #Leben_Text = glLibObjText('Leben '.join(Leben),Font_ALGER_100,(255,128,50))
+    #Time_Text
+
     glTranslated(-30,-2,0)
     glScalef(4,4,4);
     Level_Text.draw()
