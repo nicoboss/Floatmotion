@@ -10,16 +10,16 @@ No Transparence by tintime generated Cubes
 To-Do:
 Sphere texture
     - damage texture
-Sphere Rotation
+Kollisions Sounds
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
-pygame.mixer.music.play()
+#pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+#pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
+#pygame.mixer.music.play()
 #pygame.mixer.music.loop()
 
 Camera_pos = [0,0.5,6]
@@ -145,14 +145,14 @@ frame_time_alt=time.clock()
 ##    time.sleep(0.1)
 #print(time.clock()-AAA)
 random.seed(time.clock())
-Screen = (1280,1024)
+Screen = (1280,920)
 Cube_speed_z=0.05
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
 Window = glLibWindow(Screen,caption="Float Motion - Nico Bosshard")
 View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
-Statusbar = glLibView2D((0,Screen[1]-100,Screen[0],100),45)
+Statusbar = glLibView3D((0,Screen[1]-100,Screen[0],100),45)
 
 
 glLibTexturing(True)
@@ -174,10 +174,13 @@ drawing = 0
 #Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("obj/Tunnel.obj")]
 
 #time.sleep(2)
-#Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
-#Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
+Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
+Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
 
-#Level_Text = glLibObjText("Level 1",Font_ALGER_72,(255,128,50))
+Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
+Font_BSSYM7_100 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),100)
+
+Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
@@ -310,9 +313,18 @@ while True:
     Staturbar_Sun.draw()
 
     #P+=0.001
-    #glTranslated(P,-1.5,0)
+    #glTranslated(0,-1.5,0)
+
+    #glLibTexturing(True)
+
+    glTranslated(-30,-2,0)
+    glScalef(4,4,4);
+    Level_Text.draw()
+    glScalef(0.25,0.25,0.25);
+    glTranslated(30,2,0)
     
-    #Level_Text.draw()
+    glLibSelectTexture(Texture)
+    #glLibTexturing(False)
 
     #glDisable(GL_DEPTH_TEST)
     # store the projection matrix to restore later
@@ -337,19 +349,19 @@ while True:
 ##    glVertex3f(n,-n,0)
 ##    glEnd()
 
-    Heart_obj.draw()
+    
 
-    for Statusbar_heart in Statusbar_hearts:
-
-        #glRotatef(90,0,1,0)
-        #glScalef(4,4,4);
-        glTranslated(4,0,0)
-        Heart_obj.draw()
-        Level_Text.draw()
-
-        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
-        #glScalef(0.25,0.25,0.25);
-        #glRotatef(-90,0,1,0)
+##    for Statusbar_heart in Statusbar_hearts:
+##
+##        #glRotatef(90,0,1,0)
+##        #glScalef(4,4,4);
+##        glTranslated(4,0,0)
+##        Heart_obj.draw()
+##        Level_Text.draw()
+##
+##        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
+##        #glScalef(0.25,0.25,0.25);
+##        #glRotatef(-90,0,1,0)
 
 
     #glTranslated(-44,1.5,0)
@@ -395,6 +407,7 @@ while True:
         if(SphereRectCollision(Player,Cube)==1):
             if(Cube.cube_type==1):
                 Leben+=1
+                print Leben
             else:
                 if(Player_Schutzzeit<0):
                     Player_Schutzzeit=4
@@ -473,7 +486,7 @@ while True:
             if(Particle.time==0):
                 Player_Particles.pop(Object_ID)
         if(Object_ID==-1):
-            Leben=3
+            Leben=7
     else:
 
 
@@ -517,13 +530,6 @@ while True:
         
         #glTranslated(-Player.x,-Player.y,-Player.z)
         #glRotatef(-10,Player.x,Player.y,Player.z)
-
-        
-        
-
-
-
-
 
 
 
