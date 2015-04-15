@@ -33,6 +33,8 @@ Sterne=0
 Zeit=0
 Startzeit=0
 
+Leben_alt=0
+
 class glLibObjStar:
     def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,star_type=0,time=-1):
         self.size=size
@@ -253,7 +255,11 @@ P=-40
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
 
+Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
 
+Pause_Startzeit=0
+Pause_Time=0
 Startzeit=time.clock()
 
 while True:
@@ -273,7 +279,7 @@ while True:
 
             #Pause Funktionn
             if event.key == K_PAUSE or event.key == K_SPACE:
-                frame_time_alt=time.clock()
+                Pause_Startzeit=time.clock()
 
                 glTranslated(-1.4,0.8,2)
                 Pause_Text.draw()
@@ -286,7 +292,7 @@ while True:
                     time.sleep(0.5)
                     for event_p in pygame.event.get():
                         if(event.type == KEYDOWN):
-                            if(time.clock()-frame_time_alt>1):
+                            if(time.clock()-Pause_Startzeit>1):
                                 no_continue_key_press=False
                                 break
                     Window.flip()
@@ -310,7 +316,8 @@ while True:
                 glTranslated(-0.2,0.3,0)
                 glScalef(0.5,0.5,0.5);
                 glTranslated(2.2,-0.1,-2)
-                
+
+                Pause_Time+=time.clock()-Pause_Startzeit
                 frame_time_alt=time.clock()
 
                     
@@ -398,14 +405,40 @@ while True:
     #glLibTexturing(True)
 
     #Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
+
+    if(Leben_alt<>Leben):
+        Leben_alt=Leben
+        if(Leben<10):
+            Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
+        else:
+            Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
+    
+    Time=time.clock()-Startzeit-Pause_Time
+    if(Time<100):
+        if(Time<10):
+            Time_Text = glLibObjText("Time "+str(round(Time,2)),Font_ALGER_100,(0,200,200))
+        else:
+            Time_Text = glLibObjText("Time "+str(round(Time,1)),Font_ALGER_100,(0,200,200))
+    else:
+        Time_Text = glLibObjText("Time "+str(int(round(Time,0))),Font_ALGER_100,(0,200,200))
+        
+    #Time_Text = glLibObjText("Time "+str(round(time.clock(),1)),Font_ALGER_100,(255,128,50))
+    FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(255,128,50))
     #Leben_Text = glLibObjText('Leben '.join(Leben),Font_ALGER_100,(255,128,50))
     #Time_Text
 
-    glTranslated(-30,-2,0)
     glScalef(4,4,4);
+    glTranslated(-7.7,-0.5,0)  
     Level_Text.draw()
+    glTranslated(4,0,0)
+    Lives_Text.draw()
+    glTranslated(4.1,0,0)
+    Time_Text.draw()
+    glTranslated(4.5,0,0)
+    FPS_Text.draw()
+    glTranslated(-8.4,0.5,0)
     glScalef(0.25,0.25,0.25);
-    glTranslated(30,2,0)
+    
     
     glLibSelectTexture(Texture)
 
@@ -438,15 +471,13 @@ while True:
         if(Cube.z>5):
             GenerateNewArea=Cube.z-100
             Cubes.pop(Object_ID)
-        if(SphereRectCollision(Player,Cube)==1):
+        if(SphereRectCollision(Player,Cube)==True):
             if(Cube.cube_type==1):
                 Leben+=1
-                print Leben
             else:
                 if(Player_Schutzzeit<0):
                     Player_Schutzzeit=4
                     Leben-=1
-                    print Leben
                 
                 if(Leben==0):
                     print 'Tot!'
@@ -463,6 +494,8 @@ while True:
                         magnitude  = sqrt(x**2 + y**2 + z**2)
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
+                print Leben
+                
             #if(Leben>0):
             for i in range(int(round(300/speed))):
                 x=random.uniform(-Cube_speed_z,Cube_speed_z)
@@ -534,6 +567,7 @@ while True:
             Leben=7
             pygame.mixer.music.load(Sound[random.randint(0,1)])
             pygame.mixer.music.play(-1)
+            Startzeit=time.clock()
     else:
 
 
