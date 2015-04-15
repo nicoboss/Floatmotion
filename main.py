@@ -8,9 +8,8 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-Sphere texture
-    - damage texture
-Kollisions Sounds
+- Playerbereicheinschrenkung
+- Kollisions Sounds
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -179,8 +178,14 @@ Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
 
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
 Font_BSSYM7_100 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),100)
+Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
+
 
 Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
+
+Pause_Text = glLibObjText("Pause",Font_ALGER_100,(255,255,0))
+Pause_Ready = glLibObjText("Ready",Font_ALGER_100,(255,200,0))
+Pause_GO = glLibObjText("GO",Font_ALGER_100,(0,255,0))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
@@ -260,6 +265,50 @@ while True:
                 if drawing == 6:
                     drawing = 0
 
+            #Pause Funktionn
+            if event.key == K_PAUSE or event.key == K_SPACE:
+                frame_time_alt=time.clock()
+
+                glTranslated(-1.4,0.8,2)
+                Pause_Text.draw()
+                Window.flip()
+
+                Flip_1or2=1
+                
+                no_continue_key_press=True
+                while no_continue_key_press:
+                    time.sleep(0.5)
+                    for event_p in pygame.event.get():
+                        if(event.type == KEYDOWN):
+                            if(time.clock()-frame_time_alt>1):
+                                no_continue_key_press=False
+                                break
+                    Window.flip()
+                    Flip_1or2*=-1
+
+                if(Flip_1or2==1):
+                    Window.flip()
+                
+                glTranslated(-0.8,-0.7,0) #glTranslated(-1.4,0.8,2) und ergiebt glTranslated(-2.2,0.1,2)
+                glScalef(1.5,1.5,1.5);
+
+                Pause_Ready.draw()
+                Window.flip()
+                time.sleep(1)
+
+                glScalef(2,2,2);
+                glTranslated(0.2,-0.3,0)
+                Pause_GO.draw()
+                Window.flip()
+                time.sleep(1)
+                glTranslated(-0.2,0.3,0)
+                glScalef(0.5,0.5,0.5);
+                glTranslated(2.2,-0.1,-2)
+                
+                frame_time_alt=time.clock()
+
+                    
+
             #Screenshotspeicherungsfunktion
             if event.key == K_F5:
                 while True:
@@ -283,11 +332,7 @@ while True:
     if key[K_k]: Player.speed_y+=-0.0005*speed
     if key[K_o]: Player.speed_z+=0.0005*speed
     if key[K_p]: Player.speed_z+=-0.0005*speed
-##    if   key[K_LEFT]: Camera.set_target_pos([-6,0.5,0])
-##    elif key[K_RIGHT]: Camera.set_target_pos([6,0.5,0])
-##    elif key[K_UP]: Camera.set_target_pos([0,6,2])
-##    elif key[K_DOWN]: Camera.set_target_pos([0,-6,2])
-##    else: Camera.set_target_pos([0,0.5,6])
+
     if key[K_LEFT]: Camera_pos[0]-=1*speed
     if key[K_RIGHT]: Camera_pos[0]+=1*speed
     if key[K_UP]: Camera_pos[2]-=1*speed
@@ -328,72 +373,22 @@ while True:
     glTranslated(30,2,0)
     
     glLibSelectTexture(Texture)
-    #glLibTexturing(False)
-
-    #glDisable(GL_DEPTH_TEST)
-    # store the projection matrix to restore later
-    #glMatrixMode(GL_PROJECTION)
-    #glPushMatrix()
-    # load orthographic projection matrix
-    #glLoadIdentity()
-    #glOrtho(0, float(self.width),0, float(self.height), 0, 1)
-    #far=8192
-    #glOrtho(-1280/2.,1024/2.,-1024/2.,1280/2.,0,far)
-    # reset modelview
-    #glMatrixMode(GL_MODELVIEW)
-    #glLoadIdentity()
-    #glClear(GL_COLOR_BUFFER_BIT)
-
-##    z=-6
-##    n=100
-##    glTranslatef(0,0.0,-z)
-##    glBegin(GL_TRIANGLES)
-##    glVertex3f(0.0,n,0.0)
-##    glVertex3f(-n,-n,0)
-##    glVertex3f(n,-n,0)
-##    glEnd()
-
-    
-
-##    for Statusbar_heart in Statusbar_hearts:
-##
-##        #glRotatef(90,0,1,0)
-##        #glScalef(4,4,4);
-##        glTranslated(4,0,0)
-##        Heart_obj.draw()
-##        Level_Text.draw()
-##
-##        #glTranslated(-Statusbar_heart.x,-Statusbar_heart.y,-Statusbar_heart.z)
-##        #glScalef(0.25,0.25,0.25);
-##        #glRotatef(-90,0,1,0)
 
 
-    #glTranslated(-44,1.5,0)
 
 
     View3D.set_view()
     Camera.set_camera()
     Sun.draw()
-##    glLibColor((255,255,255))
-##
-##    glTranslated(1,1,1)
-##    Objects[0].draw()
-##    glLibColor((255,0,0))
-##    glTranslated(0,0,0)
-##    Objects[1].draw()
-##    glTranslated(-1,-1,-1)
-##    Objects[3].draw()
-##    Objects[4].draw()
-##
 
     #BGround.x=-0.25
     #BGround.y=-0.25
-    BGround.z+=0.01*speed
-    glScalef(10,10,10);
-    glTranslated(BGround.x,BGround.y,BGround.z)
-    BGround.draw()
-    glTranslated(-BGround.x,-BGround.y,-BGround.z)
-    glScalef(0.1,0.1,0.1);
+##    BGround.z+=0.01*speed
+##    glScalef(10,10,10);
+##    glTranslated(BGround.x,BGround.y,BGround.z)
+##    BGround.draw()
+##    glTranslated(-BGround.x,-BGround.y,-BGround.z)
+##    glScalef(0.1,0.1,0.1);
 
 
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
