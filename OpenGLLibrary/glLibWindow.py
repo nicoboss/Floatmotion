@@ -14,6 +14,7 @@ class glLibWindow:
         pygame.display.set_caption(caption)
         self.multisample = multisample
         self.fullscreen = fullscreen
+        pygame.RESIZABLE=True
         if self.multisample:pygame.display.gl_set_attribute(GL_MULTISAMPLEBUFFERS,1)
         else:pygame.display.gl_set_attribute(GL_MULTISAMPLEBUFFERS,0)
         self.set_fullscreen(self.fullscreen)

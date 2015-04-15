@@ -8,18 +8,21 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-- Playerbereicheinschrenkung
 - Kollisions Sounds
+- Statusliste dynamisch
+- Sounds konvertieren
+- Boss Würfel
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-#pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-#pygame.mixer.music.load("./sound/235349__dambient__8-bit-loop.mp3")
-#pygame.mixer.music.play()
-#pygame.mixer.music.loop()
+Sound=["./sound/235349__dambient__8-bit-loop.mp3","./sound/239539__dambient__8-bit-loop.mp3","./sound/262766__b-lamerichs__short-loops-31-01-2015-c-1.mp3"]
+
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+pygame.mixer.music.load(Sound[random.randint(0,1)]) #random.randint(1,2)
+pygame.mixer.music.play(-1)
 
 Camera_pos = [0,0.5,6]
 
@@ -86,16 +89,16 @@ class SampleListener(Leap.Listener):
 
             handType = "Left hand" if hand.is_left else "Right hand"
 
-            print "  %s, id %d, position: %s" % (
-                handType, hand.id, hand.palm_position)
+##            print "  %s, id %d, position: %s" % (
+##                handType, hand.id, hand.palm_position)
 
-            Player.speed_x=(hand.palm_position[0]/30-Player.x)/10
-            Player.speed_y=(hand.palm_position[1]/30-8-Player.y)/10
-            Player.speed_z=(hand.palm_position[2]/30-Player.z)/10
+            Player.speed_x=(hand.palm_position[0]/30-Player.x)/(15*speed)
+            Player.speed_y=(hand.palm_position[1]/30-8-Player.y)/(15*speed)
+            Player.speed_z=(hand.palm_position[2]/30-Player.z)/(20*speed)
 
-            print Player.speed_x
-            print Player.speed_y
-            print Player.speed_z
+##            print Player.speed_x
+##            print Player.speed_y
+##            print Player.speed_z
 
 
 def SphereRectCollision(sphere, rect):
@@ -126,11 +129,11 @@ frame = controller.frame()
 pygame.init()
 System_Icon = pygame.image.load("img/Cube.ico")
 pygame.display.set_icon(System_Icon)
-screen = pygame.display.set_mode((1280, 1024))
+screen = pygame.display.set_mode((1280, 720))
 #Heart_img = pygame.image.load("img/heart_PNG685.png")
 Heart_img = pygame.image.load("img/Leap.jpg")
 imagerect = Heart_img.get_rect()
-screen.blit(pygame.transform.scale(Heart_img, (1280, 1024)), (0, 0))
+screen.blit(pygame.transform.scale(Heart_img, (1280, 720)), (0, 0))
 pygame.display.flip()
 
 speed=1
@@ -144,12 +147,12 @@ frame_time_alt=time.clock()
 ##    time.sleep(0.1)
 #print(time.clock()-AAA)
 random.seed(time.clock())
-Screen = (1280,920)
+Screen = (1280,720)
 Cube_speed_z=0.05
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
-Window = glLibWindow(Screen,caption="Float Motion - Nico Bosshard")
+Window = glLibWindow(Screen,False,System_Icon,"Float Motion - Nico Bosshard",False)
 View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
 Statusbar = glLibView3D((0,Screen[1]-100,Screen[0],100),45)
 
@@ -178,7 +181,7 @@ Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
 
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
 Font_BSSYM7_100 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),100)
-Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
+#Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
 
 
 Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
@@ -186,6 +189,9 @@ Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(
 Pause_Text = glLibObjText("Pause",Font_ALGER_100,(255,255,0))
 Pause_Ready = glLibObjText("Ready",Font_ALGER_100,(255,200,0))
 Pause_GO = glLibObjText("GO",Font_ALGER_100,(0,255,0))
+
+Death_Game = glLibObjText("Game",Font_ALGER_100,(200,250,70))
+Death_Over = glLibObjText("Over",Font_ALGER_100,(255,220,60))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
@@ -321,17 +327,24 @@ while True:
                         counter += 1
                     break #Warscheinlich nutzlos aber für die Zukunft.
 
+
+##            #Wechsle Fulscreen Modus
+##            if event.key == K_F11:
+##                glLibWindow.toggle_fullscreen(Window)
+##                Window.flip()
+
+
     if key[K_a]: Player.x+=-0.01*speed
     if key[K_w]: Player.y+=0.01*speed
     if key[K_d]: Player.x+=0.01*speed
     if key[K_s]: Player.y+=-0.01*speed
 
-    if key[K_j]: Player.speed_x+=-0.0005*speed
-    if key[K_i]: Player.speed_y+=0.0005*speed
-    if key[K_l]: Player.speed_x+=0.0005*speed
-    if key[K_k]: Player.speed_y+=-0.0005*speed
-    if key[K_o]: Player.speed_z+=0.0005*speed
-    if key[K_p]: Player.speed_z+=-0.0005*speed
+    if key[K_j]: Player.speed_x+=-0.0003*speed
+    if key[K_i]: Player.speed_y+=0.0003*speed
+    if key[K_l]: Player.speed_x+=0.0003*speed
+    if key[K_k]: Player.speed_y+=-0.0003*speed
+    if key[K_o]: Player.speed_z+=0.0003*speed
+    if key[K_p]: Player.speed_z+=-0.003*speed
 
     if key[K_LEFT]: Camera_pos[0]-=1*speed
     if key[K_RIGHT]: Camera_pos[0]+=1*speed
@@ -347,6 +360,28 @@ while True:
     Player.x+=Player.speed_x*speed
     Player.y+=Player.speed_y*speed
     Player.z+=Player.speed_z*speed
+
+    if(Player.x<-1.5):
+        Player.x=-1.5
+        Player.speed_x*=-0.25
+        #Player.speed_x=abs(Player.speed_x)**2
+    if(Player.x>1.5):
+        Player.x=1.5
+        Player.speed_x*=-0.25
+        #Player.speed_x=(Player.speed_x**2)*-1
+    if(Player.y<-1.5):
+        Player.y=-1.5
+        Player.speed_y*=-0.25
+    if(Player.y>1.5):
+        Player.y=1.5
+        Player.speed_y*=-0.25
+    if(Player.z<-10):
+        Player.z=-10
+        Player.speed_z*=-0.25
+    if(Player.z>4):
+        Player.z=4
+        Player.speed_z*=-0.25
+
 
     Camera.update()
     Staturbar_Camera.update()
@@ -415,6 +450,9 @@ while True:
                 
                 if(Leben==0):
                     print 'Tot!'
+                    #pygame.mixer.music.fadeout(1)
+                    pygame.mixer.music.load("./sound/223195__rap2h__fete-foraine-1.wav")
+                    pygame.mixer.music.play(-1)
                     for Cube in Cubes:
                         Cube.z-=60
                         
@@ -471,6 +509,14 @@ while True:
 
 
     if(Leben==0):
+        glLibColor((255,255,255,255))
+        glTranslated(-1.3,0.6,2)
+        Death_Game.draw()
+        glTranslated(0.2,-0.8,0)
+        Death_Over.draw()
+        glTranslated(1.1,0.2,-2)
+        #glLibSelectTexture(Texture)
+        
         Object_ID=-1
         for Particle in Player_Particles:
             Object_ID+=1
@@ -486,6 +532,8 @@ while True:
                 Player_Particles.pop(Object_ID)
         if(Object_ID==-1):
             Leben=7
+            pygame.mixer.music.load(Sound[random.randint(0,1)])
+            pygame.mixer.music.play(-1)
     else:
 
 
@@ -511,9 +559,9 @@ while True:
         glLibColor((255,255,255,255))
         glTranslated(Player.x,Player.y,Player.z)
         #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
-        Player.rotate_x+=Player.speed_x*100
-        Player.rotate_y+=Player.speed_y*100
-        Player.rotate_z+=Player.speed_z*100
+        Player.rotate_x+=Player.speed_x*100*speed
+        Player.rotate_y+=Player.speed_y*100*speed
+        Player.rotate_z+=Player.speed_z*100*speed
         #if not (Player.speed_x==0 and Player.speed_y==0 and Player.speed_z==0):
         glRotatef(Player.rotate_x,0,1,0)
         glRotatef(-Player.rotate_y,1,0,0)
