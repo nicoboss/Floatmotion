@@ -12,16 +12,17 @@ To-Do:
 - Statusliste dynamisch
 - Sounds konvertieren
 - Boss Würfel
+- 9er Würfel
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
 
-Sound=["./sound/235349__dambient__8-bit-loop.mp3","./sound/239539__dambient__8-bit-loop.mp3","./sound/262766__b-lamerichs__short-loops-31-01-2015-c-1.mp3"]
+Sound=["./sound/Sound1.mp3","./sound/Sound2.mp3","./sound/Sound3.mp3"]
 
-pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-pygame.mixer.music.load(Sound[random.randint(0,1)]) #random.randint(1,2)
+pygame.mixer.init(size=-16, channels=2, buffer=4096)
+pygame.mixer.music.load(Sound[random.randint(077777,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
 
 Camera_pos = [0,0.5,6]
