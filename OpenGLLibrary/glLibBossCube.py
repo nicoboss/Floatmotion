@@ -41,32 +41,23 @@ CUBE_EDGES = (
     (6,3), (6,4), (6,7), (5,1), (5,4), (5,7),
 )
 
+allpoints = zip(CUBE_POINTS, CUBE_COLORS)
 
+class glLibObj():
+    def draw(self,pos=[0,0,0],rotations=[],scalar=1.0):
+        glPushMatrix()
+        glTranslatef(*pos)
+        for rotation in rotations:
+            if rotation[0] != 0: glRotatef(rotation[0],1,0,0)
+            if rotation[1] != 0: glRotatef(rotation[1],0,1,0)
+            if rotation[2] != 0: glRotatef(rotation[2],0,0,1)
+        glScalef(scalar,scalar,scalar)
+        glCallList(self.list)
+        glPopMatrix()
+    def __del__(self):
+        del self.list
 
-def drawBossCube():
-    "draw the cube"
-    allpoints = zip(CUBE_POINTS, CUBE_COLORS)
-
-    glBegin(GL_QUADS)
-    for face in CUBE_QUAD_VERTS:
-        for vert in face:
-            pos, color = allpoints[vert]
-            glColor3fv(color)
-            glVertex3fv(pos)
-    glEnd()
-
-    glColor3f(1.0, 1.0, 1.0)
-    glBegin(GL_LINES)
-    for line in CUBE_EDGES:
-        for vert in line:
-            pos, color = allpoints[vert]
-            glVertex3fv(pos)
-
-    glEnd()
-
-
-
-class glLibObjBossCube:
+class glLibObjBossCube(glLibObj):
     def __init__(self,size=1.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,a=255,rotate_x=0,rotate_y=0,rotate_z=0,cube_type=0,time=-1):
         self.size=size
 
@@ -85,4 +76,24 @@ class glLibObjBossCube:
 
         self.cube_type=cube_type
         self.time=time
+
+        self.list = glGenLists(1)
+        glNewList(self.list, GL_COMPILE)
+        glBegin(GL_QUADS)
+        for face in CUBE_QUAD_VERTS:
+            for vert in face:
+                pos, color = allpoints[vert]
+                glColor3fv(color)
+                glVertex3fv(pos)
+        glEnd()
+
+        glColor3f(1.0, 1.0, 1.0)
+        glBegin(GL_LINES)
+        for line in CUBE_EDGES:
+            for vert in line:
+                pos, color = allpoints[vert]
+                glVertex3fv(pos)
+
+        glEnd()
+        glEndList()
         

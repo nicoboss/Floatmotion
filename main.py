@@ -39,7 +39,7 @@ Startzeit=0
 Leben_alt=0
 
 Level_pos=0
-Level_length=120
+Level_length=20
 BossPrepare=False
 BossScene=False
 
@@ -175,15 +175,15 @@ Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
 #Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
 
-
-Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
-
 Pause_Text = glLibObjText("Pause",Font_ALGER_100,(255,255,0))
 Pause_Ready = glLibObjText("Ready",Font_ALGER_100,(255,200,0))
 Pause_GO = glLibObjText("GO",Font_ALGER_100,(0,255,0))
 
 Death_Game = glLibObjText("Game",Font_ALGER_100,(200,250,70))
 Death_Over = glLibObjText("Over",Font_ALGER_100,(255,220,60))
+
+BossCube_Level = glLibObjText("Level",Font_ALGER_100,(200,250,70))
+BossCube_Up = glLibObjText("Up",Font_ALGER_100,(200,250,70))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
@@ -192,8 +192,8 @@ Statusbar_hearts = []
 Cubes = []
 Particles = []
 Stars = []
-BossCube=glLibObjBossCube(3,0,0,-30,0,0,0.1,255,0,0,0,0,-1)
-Boss_Particles = []
+BossCube=glLibObjBossCube(3,0,0,-100,0,0,0.1,255,0,0,0,0,-1)
+BossCube_Particles = []
 
 BGround = glLibObjFromFile("obj/leer.obj")
 
@@ -467,7 +467,7 @@ while True:
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
 ##    BGround.draw(n)
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
-    
+
 
     Player_Schutzzeit-=1
     GenerateNewArea=0
@@ -577,25 +577,70 @@ while True:
             Pause_Time=0
             Startzeit=time.clock()
     elif(BossScene==True):
-        BossCube.x+=BossCube.speed_x*speed
-        BossCube.y+=BossCube.speed_y*speed
-        BossCube.z+=BossCube.speed_z*speed
-        
-        BossCube.rotate_x+=1*speed
-        BossCube.rotate_y=1*speed
-        BossCube.rotate_z+=1*speed
-        
-        glTranslated(BossCube.x,BossCube.y,BossCube.z)
-        glRotatef(BossCube.rotate_x,0,1,0)
-        glRotatef(BossCube.rotate_y,1,0,0)
-        glRotatef(BossCube.rotate_z,1,0,0)
-        #glScalef(BossCube.size,BossCube.size,BossCube.size);
-        drawBossCube()
-        #glScalef(1/BossCube.size,1/BossCube.size,1/BossCube.size);
-        glRotatef(-BossCube.rotate_z,1,0,0)
-        glRotatef(-BossCube.rotate_y,1,0,0)
-        glRotatef(-BossCube.rotate_x,0,1,0)
-        glTranslated(-BossCube.x,-BossCube.y,-BossCube.z)
+
+
+        Object_ID=-1
+        glScalef(0.1,0.1,0.1);
+        for Particle in BossCube_Particles:
+            Object_ID+=1
+            Particle.x+=Particle.speed_x*speed
+            Particle.y+=Particle.speed_y*speed
+            Particle.z+=Particle.speed_z*speed
+            glTranslated(Particle.x,Particle.y,Particle.z)
+            Particle.draw()
+            glTranslated(-Particle.x,-Particle.y,-Particle.z)
+            Particle.time-=1
+##            if(Particle.time==0):
+##                BossCube_Particles.pop(Object_ID)
+        glScalef(10,10,10);
+
+
+        if(Object_ID==-1):
+            if(SphereRectCollision(Player,BossCube)==True):
+                for i in range(int(round(1500/speed))):
+                            x=random.uniform(-Cube_speed_z,Cube_speed_z)
+                            y=random.uniform(-Cube_speed_z,Cube_speed_z)
+                            z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                            magnitude  = sqrt(x**2 + y**2 + z**2)
+                            BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),Player.x,Player.y,Player.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(2000/speed)))
+
+            BossCube.x+=BossCube.speed_x*speed
+            BossCube.y+=BossCube.speed_y*speed
+            BossCube.z+=BossCube.speed_z*speed
+
+            BossCube.rotate_x+=1*speed
+            BossCube.rotate_y=1*speed
+            BossCube.rotate_z+=1*speed
+
+            glTranslated(BossCube.x,BossCube.y,BossCube.z)
+            glRotatef(BossCube.rotate_x,0,1,0)
+            glRotatef(BossCube.rotate_y,1,0,0)
+            glRotatef(BossCube.rotate_z,1,0,0)
+            #glScalef(BossCube.size,BossCube.size,BossCube.size);
+            BossCube.draw()
+            #glScalef(1/BossCube.size,1/BossCube.size,1/BossCube.size);
+            glRotatef(-BossCube.rotate_z,1,0,0)
+            glRotatef(-BossCube.rotate_y,1,0,0)
+            glRotatef(-BossCube.rotate_x,0,1,0)
+            glTranslated(-BossCube.x,-BossCube.y,-BossCube.z)
+
+        else:
+            if(BossCube_Particles[0].time<500):
+                glLibColor((255,255,255,255))
+                glTranslated(-1.3,0.6,2)
+                BossCube_Level.draw()
+                glTranslated(0.2,-0.8,0)
+                BossCube_Up.draw()
+                glTranslated(1.1,0.2,-2)
+
+                if(BossCube_Particles[0].time<50):
+                    for Particle in BossCube_Particles:
+                        BossCube_Particles.pop(Object_ID)
+                    BossPrepare=False
+                    BossScene=False
+
+
+
 
     else:
         for Cube in Cubes:
@@ -646,11 +691,11 @@ while True:
         glRotatef(-Player.rotate_z,1,0,0)
         glRotatef(Player.rotate_y,1,0,0)
         glRotatef(-Player.rotate_x,0,1,0)
-        
-        
+
+
 
         glTranslated(-Player.x,-Player.y,-Player.z)
-        
+
 
     frame_time=time.clock()
     speed=(frame_time-frame_time_alt)*60
