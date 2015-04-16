@@ -257,6 +257,7 @@ for i in range(400):
 
 P=-40
 
+glLibTexturing(True)
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
 
@@ -288,8 +289,8 @@ z=-40
 glTranslated(0,0,-40)
 while z<10:
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-    glTranslated(-3.6,3,0.2*speed)
-    z+=0.2*speed
+    glTranslated(-3.6,3,0.04*speed)
+    z+=0.04*speed
     End_Text_1.draw()
     glTranslated(-0.4,-0.9,0)
     End_Text_2.draw()
@@ -325,12 +326,12 @@ End_Text_9 = glLibObjText("End",Font_ALGER_100,(255,200,0))
 glScalef(2,2,2)
 while z>-20:
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-    glTranslated(-0.75,0.1,-0.2*speed)
-    z-=0.2*speed
+    glTranslated(-0.75,0.1,-0.04*speed)
+    z-=0.04*speed
     End_Text_8.draw()
-    glTranslated(0.1,-0.8,0)
+    glTranslated(0.08,-0.8,0)
     End_Text_9.draw()
-    glTranslated(0.65,0.7,0)
+    glTranslated(0.67,0.7,0)
 
     frame_time=time.clock()
     speed=(frame_time-frame_time_alt)*60
@@ -338,20 +339,24 @@ while z>-20:
 
     Window.flip()
 
+glTranslated(0,0,20)
 glScalef(0.5,0.5,0.5)
-glEnable(GL_DEPTH_TEST)
 
-speed=1
+glLibTexturing(False)
+glLibColor((255,255,255,255))
+
+speed=6
 for i in range(int(round(1500/speed))):
     x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
     y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
     z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
     magnitude  = sqrt(x**2 + y**2 + z**2)
-    BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),0,0,-10,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(800/speed)))
+    BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),0,0,0,x/magnitude/random.uniform(145,175), y/magnitude/random.uniform(145,175), z/magnitude/random.uniform(145,155),255,0,0,0,2,round(8000/speed)))
 
-while True:
+#glScalef(0.1,0.1,0.1);
+while (BossCube_Particles[0].time>50):
+    #glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
     Object_ID=-1
-    glScalef(0.1,0.1,0.1);
     for Particle in BossCube_Particles:
         Object_ID+=1
         Particle.x+=Particle.speed_x*speed
@@ -371,9 +376,14 @@ while True:
         glRotatef(-Particle.rotate_z,1,0,0)
         glRotatef(-Particle.rotate_y,1,0,0)
         glRotatef(-Particle.rotate_x,0,1,0)
+        
+        Particle.time-=1
     Window.flip()
-while True:
-    time.sleep(0.005)
+
+
+#glScalef(10,10,10);
+glEnable(GL_DEPTH_TEST)
+
 pygame.quit()
 sys.exit()
 
