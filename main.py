@@ -8,8 +8,8 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
+- End Screen
 - Kollisions Sounds
-- Boss Würfel (Levels)
 - BossCube als Fenster Icon
 - Überdenken der GameOver Sphere Textur
 - Löscher unützer Files wie z.B. obj
@@ -30,7 +30,7 @@ pygame.mixer.music.play(-1)
 
 Camera_pos = [0,0.5,6]
 
-Level=9
+Level=1
 Leben=70
 Player_Schutzzeit=0
 Zeit=0
@@ -52,11 +52,11 @@ def GenerateCube(z=-100):
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(0,100)>40+Level*3):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level-1],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
                 Cubes_count+=1
             else:
                 if(random.randint(0,100)>75+Level*2):
-                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
+                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level-1],255,0,0,100,1))
                     Hearts_count+=1
 
     if(Cubes_count==9):
@@ -65,7 +65,7 @@ def GenerateCube(z=-100):
         Cubes_count-=9
         for x in range(-1,2):
             for y in range(-1,2):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level-1],255,0,0,100,1))
         Hearts_count+=9
 
 
@@ -164,7 +164,7 @@ frame_time_alt=time.clock()
 #print(time.clock()-AAA)
 random.seed(time.clock())
 Screen = (1280,720)
-Cube_speed_z=[0.01,0.15,0.2,0.03,0.35,0.4,0.05,0.06,0.07,0.08,0.1]
+Cube_speed_z=[0.05,0.055,0.06,0.065,0.07,0.075,0.08,0.085,0.09,0.1]
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
@@ -192,7 +192,7 @@ drawing = 0
 #Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("obj/Tunnel.obj")]
 
 #time.sleep(2)
-Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
+Font_ALGER_42 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),42)
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
 #Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
 
@@ -230,7 +230,7 @@ Heart_obj = glLibObjFromFile("obj/Heart.obj")
 #print Heart.list
 
 
-for z in range(-110,-10,10):
+for z in range(-110,-10,18-Level):
     GenerateCube(z)
 
 
@@ -246,7 +246,7 @@ for i in range(400):
     else:
         Star_y=random.uniform(2,20)
 
-    Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+    Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z[Level-1],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
 
 
 #glClearColor( 1, 1, 1, 1)
@@ -262,6 +262,54 @@ Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
 Pause_Startzeit=0
 Pause_Time=0
 Startzeit=time.clock()
+
+
+View3D.set_view()
+Camera.set_camera()
+Sun.draw()
+
+End_Text_1 = glLibObjText("Congratulations",Font_ALGER_100,(255,200,0))
+End_Text_2 = glLibObjText("You've reached the",Font_ALGER_100,(255,200,0))
+End_Text_3 = glLibObjText("end of the game",Font_ALGER_100,(255,200,0))
+End_Text_4 = glLibObjText("Hopefully you had fun",Font_ALGER_100,(255,200,0))
+End_Text_5 = glLibObjText("and will play it again",Font_ALGER_100,(255,200,0))
+End_Text_6 = glLibObjText("Enjoy yourself!",Font_ALGER_100,(255,200,0))
+End_Text_7 = glLibObjText("Nico Bosshard",Font_ALGER_100,(255,200,0))
+glDisable(GL_DEPTH_TEST)
+glLibColor((255,255,255,255))
+glScalef(0.5,0.5,0.5)
+glTranslated(-4,3,2)
+End_Text_1.draw()
+glTranslated(0,-0.9,0)
+End_Text_2.draw()
+glTranslated(0,-0.9,0)
+End_Text_3.draw()
+glTranslated(0,-1.2,0)
+End_Text_4.draw()
+glTranslated(0,-0.9,0)
+End_Text_5.draw()
+glTranslated(0,-1.2,0)
+End_Text_6.draw()
+glTranslated(0,-0.9,0)
+End_Text_7.draw()
+glTranslated(4,3,-2)
+glScalef(2,2,2)
+glLibSelectTexture(Texture_Player)
+glEnable(GL_DEPTH_TEST)
+Window.flip()
+End_Text_8 = glLibObjText("The",Font_ALGER_100,(255,200,0))
+End_Text_9 = glLibObjText("End",Font_ALGER_100,(255,200,0))
+#glScalef(2,2,2)
+#glTranslated(-1.3,0.6,2)
+End_Text_8.draw()
+glTranslated(0.2,-0.8,0)
+End_Text_9.draw()
+glTranslated(1.1,0.2,-2)
+Window.flip()
+while True:
+    time.sleep(0.005)
+pygame.quit()
+sys.exit()
 
 while True:
     key = pygame.key.get_pressed()
@@ -343,6 +391,37 @@ while True:
                         counter += 1
                     break #Warscheinlich nutzlos aber für die Zukunft.
 
+            if event.key == K_x or event.key == K_PLUS or event.key == K_KP_PLUS:
+                Level+=1
+                if(Level<10):
+                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+                elif(Level==10):
+                    Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
+                elif(Level>10):
+                    Level=10
+
+                Level_pos=0
+                BossPrepare=False
+                BossScene=False
+                Cubes = []
+                for z in range(-110,-10,18-Level):
+                    GenerateCube(z)
+                        
+                
+            if event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
+                Level-=1
+                if(Level>1):
+                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+                else:
+                    Level=1
+
+                Level_pos=0
+                BossPrepare=False
+                BossScene=False
+                Cubes = []
+                for z in range(-110,-10,18-Level):
+                    GenerateCube(z)
+
 
 ##            #Wechsle Fulscreen Modus
 ##            if event.key == K_F11:
@@ -405,7 +484,7 @@ while True:
         Player.speed_z*=-0.25
 
 
-    Camera.update()
+    Camera.upate()
     Staturbar_Camera.update()
 
     Window.clear()
@@ -506,9 +585,9 @@ while True:
                         Cube.z-=60
 
                     for i in range(int(round(600/speed))):
-                        x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                        y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                        z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                        x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                        y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                        z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                         magnitude  = sqrt(x**2 + y**2 + z**2)
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
@@ -516,9 +595,9 @@ while True:
 
             #if(Leben>0):
             for i in range(int(round(300/speed))):
-                x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 magnitude  = sqrt(x**2 + y**2 + z**2)
                 Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
             Cubes.pop(Object_ID)
@@ -530,7 +609,7 @@ while True:
             Object_ID+=1
             if(Star.z>5):
                 Stars.pop(Object_ID)
-                Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+                Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z[Level-1],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
             Star.x+=Star.speed_x*speed
             Star.y+=Star.speed_y*speed
             Star.z+=Star.speed_z*speed
@@ -625,9 +704,9 @@ while True:
                 pygame.mixer.music.play(-1)
                 Player.a=220
                 for i in range(int(round(1500/speed))):
-                            x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                            y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
-                            z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                            x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                            y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+                            z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                             magnitude  = sqrt(x**2 + y**2 + z**2)
                             BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),BossCube.x,BossCube.y,BossCube.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(800/speed)))
 
@@ -656,9 +735,9 @@ while True:
                 glLibColor((255,255,255,255))
                 glTranslated(-1.3,0.6,2)
                 BossCube_Level.draw()
-                glTranslated(0.75,-0.8,0)
+                glTranslated(0.76,-0.8,0)
                 BossCube_Up.draw()
-                glTranslated(0.55,0.2,-2)
+                glTranslated(0.54,0.2,-2)
                 glLibSelectTexture(Texture_Player)
 
                 if(BossCube_Particles[0].time<50):
@@ -677,11 +756,28 @@ while True:
                         Level=1
                     else:
                         #End Screen
-                        exit
+                        End_Text_1 = glLibObjText("Congratulations"+str(Level),Font_ALGER_100,(255,200,0))
+                        End_Text_2 = glLibObjText("You reached the End"+str(Level),Font_ALGER_100,(255,200,0))
+                        End_Text_3 = glLibObjText("of the Game"+str(Level),Font_ALGER_100,(255,200,0))
+                        End_Text_4 = glLibObjText("Hopefully you had fun"+str(Level),Font_ALGER_100,(255,200,0))
+                        End_Text_5 = glLibObjText("and will play it again"+str(Level),Font_ALGER_100,(255,200,0))
+                        End_Text_6 = glLibObjText("Nico Bosshard"+str(Level),Font_ALGER_100,(255,200,0))
+                        glDisable(GL_DEPTH_TEST)
+                        glLibColor((255,255,255,255))
+                        glTranslated(-1.3,0.6,2)
+                        End_Text_1.draw()
+                        glTranslated(0.76,-0.8,0)
+                        End_Text_2.draw()
+                        glTranslated(0.54,0.2,-2)
+                        glLibSelectTexture(Texture_Player)
+                        glEnable(GL_DEPTH_TEST)
+                        time.sleep(5)
+                        pygame.quit()
+                        sys.exit()
                     Level_pos=0
                     BossPrepare=False
                     BossScene=False
-                    for z in range(-110,-10,10):
+                    for z in range(-110,-10,18-Level):
                         GenerateCube(z)
                     pygame.mixer.music.load(Sound[random.randint(0,2)])
                     pygame.mixer.music.play(-1)
