@@ -31,13 +31,17 @@ pygame.mixer.music.play(-1)
 Camera_pos = [0,0.5,6]
 
 Level=1
-Leben=7
+Leben=70
 Player_Schutzzeit=0
-Sterne=0
 Zeit=0
 Startzeit=0
 
 Leben_alt=0
+
+Level_pos=0
+Level_length=120
+BossPrepare=False
+BossScene=False
 
 more_FPS=False
 
@@ -168,10 +172,7 @@ drawing = 0
 
 #time.sleep(2)
 Font_ALGER_72 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),72)
-Font_BSSYM7_72 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),72)
-
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
-Font_BSSYM7_100 = pygame.font.Font(os.path.join("Fonts","BSSYM7.TTF"),100)
 #Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
 
 
@@ -191,6 +192,8 @@ Statusbar_hearts = []
 Cubes = []
 Particles = []
 Stars = []
+BossCube=glLibObjBossCube(3,0,0,-30,0,0,0.1,255,0,0,0,0,-1)
+Boss_Particles = []
 
 BGround = glLibObjFromFile("obj/leer.obj")
 
@@ -568,18 +571,38 @@ while True:
                 Player_Particles.pop(Object_ID)
         if(Object_ID==-1):
             Leben=7
+            Level_pos=0
             pygame.mixer.music.load(Sound[random.randint(0,1)])
             pygame.mixer.music.play(-1)
             Pause_Time=0
             Startzeit=time.clock()
+    elif(BossScene==True):
+        BossCube.x+=BossCube.speed_x*speed
+        BossCube.y+=BossCube.speed_y*speed
+        BossCube.z+=BossCube.speed_z*speed
+        
+        BossCube.rotate_x+=1*speed
+        BossCube.rotate_y=1*speed
+        BossCube.rotate_z+=1*speed
+        
+        glTranslated(BossCube.x,BossCube.y,BossCube.z)
+        glRotatef(BossCube.rotate_x,0,1,0)
+        glRotatef(BossCube.rotate_y,1,0,0)
+        glRotatef(BossCube.rotate_z,1,0,0)
+        #glScalef(BossCube.size,BossCube.size,BossCube.size);
+        drawBossCube()
+        #glScalef(1/BossCube.size,1/BossCube.size,1/BossCube.size);
+        glRotatef(-BossCube.rotate_z,1,0,0)
+        glRotatef(-BossCube.rotate_y,1,0,0)
+        glRotatef(-BossCube.rotate_x,0,1,0)
+        glTranslated(-BossCube.x,-BossCube.y,-BossCube.z)
+
     else:
-
-
         for Cube in Cubes:
             Cube.x+=Cube.speed_x*speed
             Cube.y+=Cube.speed_y*speed
             Cube.z+=Cube.speed_z*speed
-            if(Cube.cube_type==1): #Herzz
+            if(Cube.cube_type==1): #Hertz
                 glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.8)
                 glRotatef(90,0,1,0)
                 glScalef(0.5,0.5,0.5);
@@ -594,6 +617,20 @@ while True:
             Cube.draw()
             glTranslated(-Cube.x,-Cube.y,-Cube.z)
 
+
+        #glTranslated(-Player.x,-Player.y,-Player.z)
+        #glRotatef(-10,Player.x,Player.y,Player.z)
+
+        Level_pos+=Cube.speed_z*speed
+        print Level_pos
+
+        if(Level_pos>Level_length-110):
+            if(Level_pos>Level_length):
+                BossScene=True
+            else:
+                BossPrepare=True
+
+    if(Leben>0):
         glLibColor((255,255,255,255))
         glTranslated(Player.x,Player.y,Player.z)
         #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
@@ -605,19 +642,15 @@ while True:
         glRotatef(-Player.rotate_y,1,0,0)
         glRotatef(Player.rotate_z,1,0,0)
         #print Player.speed_x*10000
-        drawBossCube()
         Player.draw()
-        #glRotatef(-Player.rotate_x,0,1,0)
-        #glRotatef(Player.rotate_y,1,0,0)
-        #glRotatef(-Player.rotate_z,1,0,0)
+        glRotatef(-Player.rotate_z,1,0,0)
+        glRotatef(Player.rotate_y,1,0,0)
+        glRotatef(-Player.rotate_x,0,1,0)
+        
+        
 
         glTranslated(-Player.x,-Player.y,-Player.z)
-
-
-        #glTranslated(-Player.x,-Player.y,-Player.z)
-        #glRotatef(-10,Player.x,Player.y,Player.z)
-
-
+        
 
     frame_time=time.clock()
     speed=(frame_time-frame_time_alt)*60
@@ -626,17 +659,17 @@ while True:
 
     Window.flip()
 
-
-    GenerateNewArea_Schutzzeit-=1
-    if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
-        GenerateNewArea_Schutzzeit=3
-        for x in range(-1,2):
-            for y in range(-1,2):
-                if(random.randint(0,100)>50):
-                    Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
-                else:
-                    if(random.randint(0,100)>80):
-                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,100,1))
-                        Hearts_count+=1
+    if(BossPrepare==False):
+        GenerateNewArea_Schutzzeit-=1
+        if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
+            GenerateNewArea_Schutzzeit=3
+            for x in range(-1,2):
+                for y in range(-1,2):
+                    if(random.randint(0,100)>50):
+                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                    else:
+                        if(random.randint(0,100)>80):
+                            Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,100,1))
+                            Hearts_count+=1
 
 

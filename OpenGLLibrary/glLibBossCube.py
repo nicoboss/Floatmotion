@@ -63,3 +63,26 @@ def drawBossCube():
             glVertex3fv(pos)
 
     glEnd()
+
+
+
+class glLibObjBossCube:
+    def __init__(self,size=1.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,a=255,rotate_x=0,rotate_y=0,rotate_z=0,cube_type=0,time=-1):
+        self.size=size
+
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
+
+        self.a=a
+
+        self.rotate_x=rotate_x
+        self.rotate_y=rotate_y
+        self.rotate_z=rotate_z
+
+        self.cube_type=cube_type
+        self.time=time
+        
