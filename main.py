@@ -14,6 +14,10 @@ To-Do:
 - Überdenken der GameOver Sphere Textur
 - Löscher unützer Files wie z.B. obj
 - NSIS Installer
+- Shadow
+- Rename SampeListener
+- Comments in Surce Code
+- Start screen picture
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -184,7 +188,7 @@ Sun.enable()
 Staturbar_Sun = glLibLight([0,20,20],Camera)
 Staturbar_Sun.enable()
 
-glLibShadowInit([[512,5]])
+#glLibShadowInit([[512,5]])
 
 glLibColorMaterial(True)
 
@@ -263,6 +267,7 @@ Pause_Startzeit=0
 Pause_Time=0
 Startzeit=time.clock()
 
+Window.clear()
 
 View3D.set_view()
 Camera.set_camera()
@@ -278,34 +283,95 @@ End_Text_7 = glLibObjText("Nico Bosshard",Font_ALGER_100,(255,200,0))
 glDisable(GL_DEPTH_TEST)
 glLibColor((255,255,255,255))
 glScalef(0.5,0.5,0.5)
-glTranslated(-4,3,2)
-End_Text_1.draw()
-glTranslated(0,-0.9,0)
-End_Text_2.draw()
-glTranslated(0,-0.9,0)
-End_Text_3.draw()
-glTranslated(0,-1.2,0)
-End_Text_4.draw()
-glTranslated(0,-0.9,0)
-End_Text_5.draw()
-glTranslated(0,-1.2,0)
-End_Text_6.draw()
-glTranslated(0,-0.9,0)
-End_Text_7.draw()
-glTranslated(4,3,-2)
+
+z=-40
+glTranslated(0,0,-40)
+while z<10:
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    glTranslated(-3.6,3,0.2*speed)
+    z+=0.2*speed
+    End_Text_1.draw()
+    glTranslated(-0.4,-0.9,0)
+    End_Text_2.draw()
+    glTranslated(0.8,-0.9,0)
+    End_Text_3.draw()
+    glTranslated(-1.46,-1.2,0)
+    End_Text_4.draw()
+    glTranslated(0.05,-0.9,0)
+    End_Text_5.draw()
+    glTranslated(1.45,-1.2,0)
+    End_Text_6.draw()
+    glTranslated(0.4,-0.9,0)
+    End_Text_7.draw()
+    #-3.6-0.4+0.8-1.46+0.05+1.45+0.4=-2.76 => 2.76
+    #3-0.9-0.9-1.2-0.9-1.2-0.9=-3 => 3
+    glTranslated(2.76,3,0)
+    
+    frame_time=time.clock()
+    speed=(frame_time-frame_time_alt)*60
+    frame_time_alt=frame_time
+    
+    Window.flip()
+    #time.sleep(0.05)
+
+
+#glTranslated(0,0,-100)
 glScalef(2,2,2)
-glLibSelectTexture(Texture_Player)
-glEnable(GL_DEPTH_TEST)
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 Window.flip()
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 End_Text_8 = glLibObjText("The",Font_ALGER_100,(255,200,0))
 End_Text_9 = glLibObjText("End",Font_ALGER_100,(255,200,0))
-#glScalef(2,2,2)
-#glTranslated(-1.3,0.6,2)
-End_Text_8.draw()
-glTranslated(0.2,-0.8,0)
-End_Text_9.draw()
-glTranslated(1.1,0.2,-2)
-Window.flip()
+glScalef(2,2,2)
+while z>-20:
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    glTranslated(-0.75,0.1,-0.2*speed)
+    z-=0.2*speed
+    End_Text_8.draw()
+    glTranslated(0.1,-0.8,0)
+    End_Text_9.draw()
+    glTranslated(0.65,0.7,0)
+
+    frame_time=time.clock()
+    speed=(frame_time-frame_time_alt)*60
+    frame_time_alt=frame_time
+
+    Window.flip()
+
+glScalef(0.5,0.5,0.5)
+glEnable(GL_DEPTH_TEST)
+
+speed=1
+for i in range(int(round(1500/speed))):
+    x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+    y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+    z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
+    magnitude  = sqrt(x**2 + y**2 + z**2)
+    BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),0,0,-10,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(800/speed)))
+
+while True:
+    Object_ID=-1
+    glScalef(0.1,0.1,0.1);
+    for Particle in BossCube_Particles:
+        Object_ID+=1
+        Particle.x+=Particle.speed_x*speed
+        Particle.y+=Particle.speed_y*speed
+        Particle.z+=Particle.speed_z*speed
+
+        Particle.rotate_x+=random.uniform(0,2)*speed
+        Particle.rotate_y=random.uniform(0,2)*speed
+        Particle.rotate_z+=random.uniform(0,2)*speed
+         
+        glRotatef(Particle.rotate_x,0,1,0)
+        glRotatef(Particle.rotate_y,1,0,0)
+        glRotatef(Particle.rotate_z,1,0,0)
+        glTranslated(Particle.x,Particle.y,Particle.z)
+        Particle.draw()
+        glTranslated(-Particle.x,-Particle.y,-Particle.z)
+        glRotatef(-Particle.rotate_z,1,0,0)
+        glRotatef(-Particle.rotate_y,1,0,0)
+        glRotatef(-Particle.rotate_x,0,1,0)
+    Window.flip()
 while True:
     time.sleep(0.005)
 pygame.quit()
@@ -693,6 +759,7 @@ while True:
             glRotatef(-Particle.rotate_x,0,1,0)
             
             Particle.time-=1
+            
 ##            if(Particle.time==0):
 ##                BossCube_Particles.pop(Object_ID)
         glScalef(10,10,10);
