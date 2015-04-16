@@ -1,4 +1,4 @@
-"""
+﻿"""
  A simple Game nemed Flootmoion
  Developed by NicoBosshard <nico@bosshome.ch>
 
@@ -9,10 +9,11 @@ No Transparence by tintime generated Cubes
 
 To-Do:
 - Kollisions Sounds
-- Statusliste dynamisch
-- Sounds konvertieren
-- Boss W�rfel
-- 9er W�rfel
+- Boss Würfel (Levels)
+- BossCube als Fenster Icon
+- Überdenken der GameOver Sphere Textur
+- Löscher unützer Files wie z.B. obj
+- NSIS Installer
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -20,9 +21,11 @@ from pygame.locals import *
 from OpenGLLibrary import *
 
 Sound=["./sound/Sound1.mp3","./sound/Sound2.mp3","./sound/Sound3.mp3"]
+Sound_GameOver="./sound/GameOver.mp3"
+Sound_LevelUp="./sound/LevelUp.mp3"
 
 pygame.mixer.init(size=-16, channels=2, buffer=4096)
-pygame.mixer.music.load(Sound[random.randint(077777,2)]) #random.randint(1,2)
+pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
 
 Camera_pos = [0,0.5,6]
@@ -36,25 +39,10 @@ Startzeit=0
 
 Leben_alt=0
 
-class glLibObjStar:
-    def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,star_type=0,time=-1):
-        self.size=size
+more_FPS=False
 
-        self.x=x
-        self.y=y
-        self.z=z
-        self.speed_x=speed_x
-        self.speed_y=speed_y
-        self.speed_z=speed_z
 
-        self.r=r
-        self.g=g
-        self.b=b
-        self.a=a
 
-        self.star_type=star_type
-        self.time=time
-        
 
 class SampleListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
@@ -229,13 +217,19 @@ for z in range(-110,-10,10):
                 if(random.randint(1,100)>90):
                     Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
                     Hearts_count+=1
-                
 
-    #if(Cubes_count==9):
-    #    Cubes
+    if(Cubes_count==9):
+        for i in range(9):
+            Cubes.pop() #by Defult remove last Objekt
+        Cubes_count-=9
+        for x in range(-1,2):
+            for y in range(-1,2):
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
+        Hearts_count+=9
+
 
 for i in range(400):
-    #Die follgenden if-Bedingungen sind zum verhindern von Sternen in der W�rfelzone.
+    #Die follgenden if-Bedingungen sind zum verhindern von Sternen in der Würfelzone.
     if(random.randint(1,100)>50):
         Star_x=random.uniform(-20,-2)
     else:
@@ -245,10 +239,10 @@ for i in range(400):
         Star_y=random.uniform(-20,-2)
     else:
         Star_y=random.uniform(2,20)
-    
+
     Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
 
-    
+
 #glClearColor( 1, 1, 1, 1)
 
 P=-40
@@ -282,12 +276,14 @@ while True:
             if event.key == K_PAUSE or event.key == K_SPACE:
                 Pause_Startzeit=time.clock()
 
+                #Der dept test wird temporär ausgeshaltet, dammit keine Würfel vor der Schrift gezeichnet werden können.
+                glDisable(GL_DEPTH_TEST)
                 glTranslated(-1.4,0.8,2)
                 Pause_Text.draw()
                 Window.flip()
 
                 Flip_1or2=1
-                
+
                 no_continue_key_press=True
                 while no_continue_key_press:
                     time.sleep(0.5)
@@ -301,7 +297,7 @@ while True:
 
                 if(Flip_1or2==1):
                     Window.flip()
-                
+
                 glTranslated(-0.8,-0.7,0) #glTranslated(-1.4,0.8,2) und ergiebt glTranslated(-2.2,0.1,2)
                 glScalef(1.5,1.5,1.5);
 
@@ -317,11 +313,17 @@ while True:
                 glTranslated(-0.2,0.3,0)
                 glScalef(0.5,0.5,0.5);
                 glTranslated(2.2,-0.1,-2)
+                glEnable(GL_DEPTH_TEST)
 
                 Pause_Time+=time.clock()-Pause_Startzeit
                 frame_time_alt=time.clock()
 
-                    
+            #More FPS Funkttion (no Stars)
+            if event.key == K_F2:
+                if(more_FPS==False):
+                    more_FPS=True
+                else:
+                    more_FPS=False
 
             #Screenshotspeicherungsfunktion
             if event.key == K_F5:
@@ -333,7 +335,7 @@ while True:
                         try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png")
                         except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png");break
                         counter += 1
-                    break #Warscheinlich nutzlos aber f�r die Zukunft.
+                    break #Warscheinlich nutzlos aber für die Zukunft.
 
 
 ##            #Wechsle Fulscreen Modus
@@ -413,7 +415,7 @@ while True:
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
             Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
-    
+
     Time=time.clock()-Startzeit-Pause_Time
     if(Time<100):
         if(Time<10):
@@ -422,14 +424,14 @@ while True:
             Time_Text = glLibObjText("Time "+str(round(Time,1)),Font_ALGER_100,(0,200,200))
     else:
         Time_Text = glLibObjText("Time "+str(int(round(Time,0))),Font_ALGER_100,(0,200,200))
-        
+
     #Time_Text = glLibObjText("Time "+str(round(time.clock(),1)),Font_ALGER_100,(255,128,50))
     FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(255,128,50))
     #Leben_Text = glLibObjText('Leben '.join(Leben),Font_ALGER_100,(255,128,50))
     #Time_Text
 
     glScalef(4,4,4);
-    glTranslated(-7.7,-0.5,0)  
+    glTranslated(-7.7,-0.5,0)
     Level_Text.draw()
     glTranslated(4,0,0)
     Lives_Text.draw()
@@ -439,8 +441,7 @@ while True:
     FPS_Text.draw()
     glTranslated(-8.4,0.5,0)
     glScalef(0.25,0.25,0.25);
-    
-    
+
     glLibSelectTexture(Texture)
 
 
@@ -463,6 +464,7 @@ while True:
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
 ##    BGround.draw(n)
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
+    
 
     Player_Schutzzeit-=1
     GenerateNewArea=0
@@ -479,15 +481,15 @@ while True:
                 if(Player_Schutzzeit<0):
                     Player_Schutzzeit=4
                     Leben-=1
-                
+
                 if(Leben==0):
                     print 'Tot!'
                     #pygame.mixer.music.fadeout(1)
-                    pygame.mixer.music.load("./sound/223195__rap2h__fete-foraine-1.wav")
+                    pygame.mixer.music.load(Sound_GameOver)
                     pygame.mixer.music.play(-1)
                     for Cube in Cubes:
                         Cube.z-=60
-                        
+
                     for i in range(int(round(600/speed))):
                         x=random.uniform(-Cube_speed_z,Cube_speed_z)
                         y=random.uniform(-Cube_speed_z,Cube_speed_z)
@@ -496,7 +498,7 @@ while True:
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
                 print Leben
-                
+
             #if(Leben>0):
             for i in range(int(round(300/speed))):
                 x=random.uniform(-Cube_speed_z,Cube_speed_z)
@@ -506,26 +508,26 @@ while True:
                 Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
             Cubes.pop(Object_ID)
 
+    if(more_FPS==False):
+        #Hier habe ich absichtlich Star_obj.draw() und Stars.pop() in die gleiche for Star in Stars Schleife gemacht da dadurch viele Ressourcen gespart sowie durch das unsaubere Löschen coole Blinkeffekte entstehen.
+        Object_ID=-1
+        for Star in Stars:
+            Object_ID+=1
+            if(Star.z>5):
+                Stars.pop(Object_ID)
+                Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+            Star.x+=Star.speed_x*speed
+            Star.y+=Star.speed_y*speed
+            Star.z+=Star.speed_z*speed
+            glTranslated(Star.x,Star.y-0.8,Star.z+0.8)
+            glRotatef(90,1,0,0)
+            glScalef(Star.size,Star.size,Star.size);
+            glLibColor((Star.x,Star.y,Star.z))
+            Star_obj.draw()
+            glScalef(1/Star.size,1/Star.size,1/Star.size);
+            glRotatef(-90,1,0,0)
+            glTranslated(-Star.x,-Star.y+0.8,-Star.z-0.8)
 
-    #Hier habe ich absichtlich Star_obj.draw() und Stars.pop() in die gleiche for Star in Stars Schleife gemacht da dadurch viele Ressourcen gespart sowie durch das unsaubere L�schen coole Blinkeffekte entstehen.
-    Object_ID=-1          
-    for Star in Stars:
-        Object_ID+=1
-        if(Star.z>5):
-            Stars.pop(Object_ID)
-            Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
-        Star.x+=Star.speed_x*speed
-        Star.y+=Star.speed_y*speed
-        Star.z+=Star.speed_z*speed
-        glTranslated(Star.x,Star.y-0.8,Star.z+0.8)
-        glRotatef(90,1,0,0)
-        glScalef(Star.size,Star.size,Star.size);
-        glLibColor((Star.x,Star.y,Star.z))
-        Star_obj.draw()
-        glScalef(1/Star.size,1/Star.size,1/Star.size);
-        glRotatef(-90,1,0,0)
-        glTranslated(-Star.x,-Star.y+0.8,-Star.z-0.8)
-        
 
     Object_ID=-1
     for Particle in Particles:
@@ -550,7 +552,7 @@ while True:
         Death_Over.draw()
         glTranslated(1.1,0.2,-2)
         #glLibSelectTexture(Texture)
-        
+
         Object_ID=-1
         for Particle in Player_Particles:
             Object_ID+=1
@@ -568,6 +570,7 @@ while True:
             Leben=7
             pygame.mixer.music.load(Sound[random.randint(0,1)])
             pygame.mixer.music.play(-1)
+            Pause_Time=0
             Startzeit=time.clock()
     else:
 
@@ -581,16 +584,16 @@ while True:
                 glRotatef(90,0,1,0)
                 glScalef(0.5,0.5,0.5);
                 glLibColor((255,0,0,255))
-                Heart_obj.draw() #Wichtig: Herz vor W�rfel da sonst unsichtbar
+                Heart_obj.draw() #Wichtig: Herz vor Würfel da sonst unsichtbar
                 glScalef(2,2,2);
                 glRotatef(-90,0,1,0)
                 glTranslated(-Cube.x,-Cube.y+0.8,-Cube.z-0.8)
-                
+
             glTranslated(Cube.x,Cube.y,Cube.z)
             glLibColor((Cube.r,Cube.g,Cube.b,Cube.a))
             Cube.draw()
             glTranslated(-Cube.x,-Cube.y,-Cube.z)
-            
+
         glLibColor((255,255,255,255))
         glTranslated(Player.x,Player.y,Player.z)
         #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
@@ -602,6 +605,7 @@ while True:
         glRotatef(-Player.rotate_y,1,0,0)
         glRotatef(Player.rotate_z,1,0,0)
         #print Player.speed_x*10000
+        drawBossCube()
         Player.draw()
         #glRotatef(-Player.rotate_x,0,1,0)
         #glRotatef(Player.rotate_y,1,0,0)
@@ -609,7 +613,7 @@ while True:
 
         glTranslated(-Player.x,-Player.y,-Player.z)
 
-        
+
         #glTranslated(-Player.x,-Player.y,-Player.z)
         #glRotatef(-10,Player.x,Player.y,Player.z)
 
@@ -619,7 +623,7 @@ while True:
     speed=(frame_time-frame_time_alt)*60
     #print speed
     frame_time_alt=frame_time
-    
+
     Window.flip()
 
 

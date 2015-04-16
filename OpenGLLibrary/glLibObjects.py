@@ -119,6 +119,24 @@ class glLibObjCube(glLibObj):
         glNormal3f(-1.0, 0.0, 0.0);glVertex3f(-size,-size,-size);glVertex3f(-size,-size, size);glVertex3f(-size, size, size);glVertex3f(-size, size,-size)
         glEnd()
         glEndList()
+class glLibObjStar:
+    def __init__(self,size=0.5,x=0,y=0,z=0,speed_x=0,speed_y=0,speed_z=0,r=255,g=255,b=255,a=255,star_type=0,time=-1):
+        self.size=size
+
+        self.x=x
+        self.y=y
+        self.z=z
+        self.speed_x=speed_x
+        self.speed_y=speed_y
+        self.speed_z=speed_z
+
+        self.r=r
+        self.g=g
+        self.b=b
+        self.a=a
+
+        self.star_type=star_type
+        self.time=time
 class glLibObjTeapot(glLibObj):
     def __init__(self,size=1.0):
         self.list = glGenLists(1)
