@@ -143,7 +143,7 @@ frame_time_alt=time.clock()
 #print(time.clock()-AAA)
 random.seed(time.clock())
 Screen = (1280,720)
-Cube_speed_z=0.05
+Cube_speed_z=[0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10]
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
@@ -182,12 +182,13 @@ Pause_GO = glLibObjText("GO",Font_ALGER_100,(0,255,0))
 Death_Game = glLibObjText("Game",Font_ALGER_100,(200,250,70))
 Death_Over = glLibObjText("Over",Font_ALGER_100,(255,220,60))
 
-BossCube_Level = glLibObjText("Level",Font_ALGER_100,(200,250,70))
-BossCube_Up = glLibObjText("Up",Font_ALGER_100,(200,250,70))
+BossCube_Level = glLibObjText("Level",Font_ALGER_100,(255,200,0))
+#BossCube_Up = glLibObjText("Up",Font_ALGER_100,(180,230,30))
+BossCube_Up = glLibObjText("Up",Font_ALGER_100,(255,230,30))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
-Texture = glLibTexture("textures/Oak Ligh.bmp")
+Texture_Player = glLibTexture("textures/Oak Ligh.bmp")
 Statusbar_hearts = []
 Cubes = []
 Particles = []
@@ -214,11 +215,11 @@ for z in range(-110,-10,10):
     for x in range(-1,2):
         for y in range(-1,2):
             if(random.randint(1,100)>50):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
                 Cubes_count+=1
             else:
                 if(random.randint(1,100)>90):
-                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
+                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
                     Hearts_count+=1
 
     if(Cubes_count==9):
@@ -227,7 +228,7 @@ for z in range(-110,-10,10):
         Cubes_count-=9
         for x in range(-1,2):
             for y in range(-1,2):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z,255,0,0,100,1))
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
         Hearts_count+=9
 
 
@@ -243,7 +244,7 @@ for i in range(400):
     else:
         Star_y=random.uniform(2,20)
 
-    Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+    Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
 
 
 #glClearColor( 1, 1, 1, 1)
@@ -365,6 +366,8 @@ while True:
     if key[K_DOWN]: Camera_pos[2]+=1*speed
     if key[K_0]: Camera_pos = [0,0.5,6]
 
+    if key[K_TAB]: speed*=4
+
 
 
     Camera.set_target_pos(Camera_pos)
@@ -445,7 +448,7 @@ while True:
     glTranslated(-8.4,0.5,0)
     glScalef(0.25,0.25,0.25);
 
-    glLibSelectTexture(Texture)
+    glLibSelectTexture(Texture_Player)
 
 
 
@@ -494,9 +497,9 @@ while True:
                         Cube.z-=60
 
                     for i in range(int(round(600/speed))):
-                        x=random.uniform(-Cube_speed_z,Cube_speed_z)
-                        y=random.uniform(-Cube_speed_z,Cube_speed_z)
-                        z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                        x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                        y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                        z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
                         magnitude  = sqrt(x**2 + y**2 + z**2)
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
@@ -504,9 +507,9 @@ while True:
 
             #if(Leben>0):
             for i in range(int(round(300/speed))):
-                x=random.uniform(-Cube_speed_z,Cube_speed_z)
-                y=random.uniform(-Cube_speed_z,Cube_speed_z)
-                z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
                 magnitude  = sqrt(x**2 + y**2 + z**2)
                 Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
             Cubes.pop(Object_ID)
@@ -518,7 +521,7 @@ while True:
             Object_ID+=1
             if(Star.z>5):
                 Stars.pop(Object_ID)
-                Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
+                Stars.append(glLibObjStar(random.uniform(0.01,0.03),random.uniform(-20,20),random.uniform(-20,20),random.uniform(-90,110),0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
             Star.x+=Star.speed_x*speed
             Star.y+=Star.speed_y*speed
             Star.z+=Star.speed_z*speed
@@ -554,7 +557,7 @@ while True:
         glTranslated(0.2,-0.8,0)
         Death_Over.draw()
         glTranslated(1.1,0.2,-2)
-        #glLibSelectTexture(Texture)
+        glLibSelectTexture(Texture_Player)
 
         Object_ID=-1
         for Particle in Player_Particles:
@@ -597,12 +600,15 @@ while True:
 
         if(Object_ID==-1):
             if(SphereRectCollision(Player,BossCube)==True):
+                pygame.mixer.music.load(Sound_LevelUp)
+                pygame.mixer.music.play(-1)
+                Player.a=220
                 for i in range(int(round(1500/speed))):
-                            x=random.uniform(-Cube_speed_z,Cube_speed_z)
-                            y=random.uniform(-Cube_speed_z,Cube_speed_z)
-                            z=random.uniform(-Cube_speed_z,Cube_speed_z)
+                            x=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                            y=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
+                            z=random.uniform(-Cube_speed_z[Level],Cube_speed_z[Level])
                             magnitude  = sqrt(x**2 + y**2 + z**2)
-                            BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),Player.x,Player.y,Player.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(2000/speed)))
+                            BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),BossCube.x,BossCube.y,BossCube.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(800/speed)))
 
             BossCube.x+=BossCube.speed_x*speed
             BossCube.y+=BossCube.speed_y*speed
@@ -616,28 +622,44 @@ while True:
             glRotatef(BossCube.rotate_x,0,1,0)
             glRotatef(BossCube.rotate_y,1,0,0)
             glRotatef(BossCube.rotate_z,1,0,0)
-            #glScalef(BossCube.size,BossCube.size,BossCube.size);
+            glScalef(6,6,6);
             BossCube.draw()
-            #glScalef(1/BossCube.size,1/BossCube.size,1/BossCube.size);
+            glScalef(0.166666667,0.166666667,0.166666667);
             glRotatef(-BossCube.rotate_z,1,0,0)
             glRotatef(-BossCube.rotate_y,1,0,0)
             glRotatef(-BossCube.rotate_x,0,1,0)
             glTranslated(-BossCube.x,-BossCube.y,-BossCube.z)
 
         else:
-            if(BossCube_Particles[0].time<500):
+            if(BossCube_Particles[0].time<300):
                 glLibColor((255,255,255,255))
                 glTranslated(-1.3,0.6,2)
                 BossCube_Level.draw()
-                glTranslated(0.2,-0.8,0)
+                glTranslated(0.75,-0.8,0)
                 BossCube_Up.draw()
-                glTranslated(1.1,0.2,-2)
+                glTranslated(0.55,0.2,-2)
+                glLibSelectTexture(Texture_Player)
 
                 if(BossCube_Particles[0].time<50):
-                    for Particle in BossCube_Particles:
-                        BossCube_Particles.pop(Object_ID)
+                    BossCube_Particles = []
+##                    Prticles_count=BossCube_Particles.__len__()
+##                    for i in range(Prticles_count):
+##                        BossCube_Particles.pop()
+                    BossCube.z=-100
+                    Player.a=255
+                    Level+=1
+                    if(Level<10):
+                        Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+                    elif(Level==10):
+                        Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
+                    else:
+                        #End Screen
+                        exit
+                    Level_pos=0
                     BossPrepare=False
                     BossScene=False
+                    pygame.mixer.music.load(Sound[random.randint(0,2)])
+                    pygame.mixer.music.play(-1)
 
 
 
@@ -647,7 +669,7 @@ while True:
             Cube.x+=Cube.speed_x*speed
             Cube.y+=Cube.speed_y*speed
             Cube.z+=Cube.speed_z*speed
-            if(Cube.cube_type==1): #Hertz
+            if(Cube.cube_type==1): #Herz
                 glTranslated(Cube.x,Cube.y-0.8,Cube.z+0.8)
                 glRotatef(90,0,1,0)
                 glScalef(0.5,0.5,0.5);
@@ -667,7 +689,7 @@ while True:
         #glRotatef(-10,Player.x,Player.y,Player.z)
 
         Level_pos+=Cube.speed_z*speed
-        print Level_pos
+        #print Level_pos
 
         if(Level_pos>Level_length-110):
             if(Level_pos>Level_length):
@@ -676,7 +698,7 @@ while True:
                 BossPrepare=True
 
     if(Leben>0):
-        glLibColor((255,255,255,255))
+        glLibColor((Player.r,Player.g,Player.b,Player.a))
         glTranslated(Player.x,Player.y,Player.z)
         #r+=sqrt(Player.speed_x**2 + Player.speed_y**2 + Player.speed_z**2)*100
         Player.rotate_x+=Player.speed_x*100*speed
@@ -710,11 +732,20 @@ while True:
             GenerateNewArea_Schutzzeit=3
             for x in range(-1,2):
                 for y in range(-1,2):
-                    if(random.randint(0,100)>50):
-                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                    if(random.randint(0,100)>50+Level*2):
+                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
                     else:
-                        if(random.randint(0,100)>80):
-                            Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z,255,0,0,100,1))
+                        if(random.randint(0,100)>75+Level*2):
+                            Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z[Level],255,0,0,100,1))
                             Hearts_count+=1
+
+            if(Cubes_count==9):
+                for i in range(9):
+                    Cubes.pop() #by Defult remove last Objekt
+                Cubes_count-=9
+                for x in range(-1,2):
+                    for y in range(-1,2):
+                        Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
+                Hearts_count+=9
 
 
