@@ -8,14 +8,12 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-- End Screen Keine Rückmeldung
+- End Screen Keine Rückmeldung VSynch?
 - Kollisions Sounds
 - BossCube als Fenster Icon
 - Überdenken der GameOver Sphere Textur
 - Löscher unützer Files wie z.B. obj
 - NSIS Installer
-- Shadow
-- Rename SampeListener
 - Comments in Surce Code
 - Start screen picture
 - Sphere Texture
@@ -37,7 +35,7 @@ pygame.mixer.music.play(-1)
 Camera_pos = [0,0.5,6]
 
 Level=1
-Leben=70
+Leben=7
 Player_Schutzzeit=0
 Zeit=0
 Startzeit=0
@@ -86,7 +84,7 @@ def LevelReload():
         GenerateCube(z)
 
 
-class SampleListener(Leap.Listener):
+class LeapMotionListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
     state_names = ['STATE_INVALID', 'STATE_START', 'STATE_UPDATE', 'STATE_END']
@@ -152,7 +150,7 @@ def SphereRectCollision(sphere, rect):
     return (cornerDistance_sq < (sphere.radius * sphere.radius))
 
 
-listener = SampleListener()
+listener = LeapMotionListener()
 controller = Leap.Controller()
 
 controller.add_listener(listener)
@@ -226,7 +224,8 @@ BossCube_Up = glLibObjText("Up",Font_ALGER_100,(255,230,30))
 
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
-Texture_Player = glLibTexture("textures/Oak Ligh.bmp")
+#Texture_Player = glLibTexture("textures/Oak Ligh.bmp"
+Texture_Player = glLibTexture("textures/Limeston.bmp")
 Statusbar_hearts = []
 Cubes = []
 Particles = []
@@ -234,7 +233,7 @@ Stars = []
 BossCube=glLibObjBossCube(3,0,0,-100,0,0,0.1,255,0,0,0,0,-1)
 BossCube_Particles = []
 
-BGround = glLibObjFromFile("obj/leer.obj")
+#BGround = glLibObjFromFile("obj/leer.obj")
 
 Star_obj = glLibObjFromFile("obj/Star.obj")
 Heart_obj = glLibObjFromFile("obj/Heart.obj")
@@ -440,7 +439,7 @@ while True:
     if key[K_RIGHT]: Camera_pos[0]+=1*speed
     if key[K_UP]: Camera_pos[2]-=1*speed
     if key[K_DOWN]: Camera_pos[2]+=1*speed
-    if key[K_0]: Camera_pos = [0,0.5,6]
+    if key[K_LCTRL] or key[K_RCTRL] or key[K_BACKSPACE]: Camera_pos = [0,0.5,6]
 
     if key[K_TAB]:
         speed*=4
