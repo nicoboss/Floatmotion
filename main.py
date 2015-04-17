@@ -30,7 +30,7 @@ pygame.mixer.music.play(-1)
 
 Camera_pos = [0,0.5,6]
 
-Level=1
+Level=9
 Leben=70
 Player_Schutzzeit=0
 Zeit=0
@@ -39,13 +39,34 @@ Startzeit=0
 Leben_alt=0
 
 Level_pos=0
-Level_length=20
+Level_length=500
 BossPrepare=False
 BossScene=False
 
 more_FPS=False
 
 
+def GenerateCube(z=-100):
+    Cubes_count=0
+    Hearts_count=0
+    for x in range(-1,2):
+        for y in range(-1,2):
+            if(random.randint(0,100)>40+Level*3):
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
+                Cubes_count+=1
+            else:
+                if(random.randint(0,100)>75+Level*2):
+                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
+                    Hearts_count+=1
+
+    if(Cubes_count==9):
+        for i in range(9):
+            Cubes.pop() #by Defult remove last Objekt
+        Cubes_count-=9
+        for x in range(-1,2):
+            for y in range(-1,2):
+                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
+        Hearts_count+=9
 
 
 class SampleListener(Leap.Listener):
@@ -143,7 +164,7 @@ frame_time_alt=time.clock()
 #print(time.clock()-AAA)
 random.seed(time.clock())
 Screen = (1280,720)
-Cube_speed_z=[0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.10]
+Cube_speed_z=[0.01,0.15,0.2,0.03,0.35,0.4,0.05,0.06,0.07,0.08,0.1]
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
@@ -210,26 +231,7 @@ Heart_obj = glLibObjFromFile("obj/Heart.obj")
 
 
 for z in range(-110,-10,10):
-    Cubes_count=0
-    Hearts_count=0
-    for x in range(-1,2):
-        for y in range(-1,2):
-            if(random.randint(1,100)>50):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
-                Cubes_count+=1
-            else:
-                if(random.randint(1,100)>90):
-                    Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
-                    Hearts_count+=1
-
-    if(Cubes_count==9):
-        for i in range(9):
-            Cubes.pop() #by Defult remove last Objekt
-        Cubes_count-=9
-        for x in range(-1,2):
-            for y in range(-1,2):
-                Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
-        Hearts_count+=9
+    GenerateCube(z)
 
 
 for i in range(400):
@@ -366,7 +368,11 @@ while True:
     if key[K_DOWN]: Camera_pos[2]+=1*speed
     if key[K_0]: Camera_pos = [0,0.5,6]
 
-    if key[K_TAB]: speed*=4
+    if key[K_TAB]:
+        speed*=4
+        Tap_Press=True
+    else:
+        Tap_Press=False
 
 
 
@@ -432,7 +438,10 @@ while True:
         Time_Text = glLibObjText("Time "+str(int(round(Time,0))),Font_ALGER_100,(0,200,200))
 
     #Time_Text = glLibObjText("Time "+str(round(time.clock(),1)),Font_ALGER_100,(255,128,50))
-    FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(255,128,50))
+    if(Tap_Press==False):
+        FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
+    else:
+        FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/4),0))),Font_ALGER_100,(255,128,50))
     #Leben_Text = glLibObjText('Leben '.join(Leben),Font_ALGER_100,(255,128,50))
     #Time_Text
 
@@ -589,9 +598,21 @@ while True:
             Particle.x+=Particle.speed_x*speed
             Particle.y+=Particle.speed_y*speed
             Particle.z+=Particle.speed_z*speed
+
+            Particle.rotate_x+=random.uniform(0,2)*speed
+            Particle.rotate_y=random.uniform(0,2)*speed
+            Particle.rotate_z+=random.uniform(0,2)*speed
+             
+            glRotatef(Particle.rotate_x,0,1,0)
+            glRotatef(Particle.rotate_y,1,0,0)
+            glRotatef(Particle.rotate_z,1,0,0)
             glTranslated(Particle.x,Particle.y,Particle.z)
             Particle.draw()
             glTranslated(-Particle.x,-Particle.y,-Particle.z)
+            glRotatef(-Particle.rotate_z,1,0,0)
+            glRotatef(-Particle.rotate_y,1,0,0)
+            glRotatef(-Particle.rotate_x,0,1,0)
+            
             Particle.time-=1
 ##            if(Particle.time==0):
 ##                BossCube_Particles.pop(Object_ID)
@@ -652,12 +673,16 @@ while True:
                         Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
                     elif(Level==10):
                         Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
+                    elif(Level<1):
+                        Level=1
                     else:
                         #End Screen
                         exit
                     Level_pos=0
                     BossPrepare=False
                     BossScene=False
+                    for z in range(-110,-10,10):
+                        GenerateCube(z)
                     pygame.mixer.music.load(Sound[random.randint(0,2)])
                     pygame.mixer.music.play(-1)
 
@@ -730,22 +755,5 @@ while True:
         GenerateNewArea_Schutzzeit-=1
         if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
             GenerateNewArea_Schutzzeit=3
-            for x in range(-1,2):
-                for y in range(-1,2):
-                    if(random.randint(0,100)>50+Level*2):
-                        Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z[Level],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence))
-                    else:
-                        if(random.randint(0,100)>75+Level*2):
-                            Cubes.append(glLibObjCube(0.5,x,y,GenerateNewArea,0,0,Cube_speed_z[Level],255,0,0,100,1))
-                            Hearts_count+=1
-
-            if(Cubes_count==9):
-                for i in range(9):
-                    Cubes.pop() #by Defult remove last Objekt
-                Cubes_count-=9
-                for x in range(-1,2):
-                    for y in range(-1,2):
-                        Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level],255,0,0,100,1))
-                Hearts_count+=9
-
+            GenerateCube(GenerateNewArea)
 
