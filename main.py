@@ -18,6 +18,8 @@ To-Do:
 - Rename SampeListener
 - Comments in Surce Code
 - Start screen picture
+- Sphere Texture
+- F1 Hilfe
 """
 import Leap, sys, threading, math, pygame, random, time
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -279,10 +281,7 @@ while True:
             if event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-            if event.key == K_RETURN:
-                drawing += 1
-                if drawing == 6:
-                    drawing = 0
+            
 
             #Pause Funktionn
             if event.key == K_PAUSE or event.key == K_SPACE:
@@ -386,6 +385,9 @@ while True:
 ##                glLibWindow.toggle_fullscreen(Window)
 ##                Window.flip()
 
+    if key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
+        pygame.quit()
+        sys.exit()
 
     if key[K_a]: Player.x+=-0.01*speed
     if key[K_w]: Player.y+=0.01*speed
@@ -410,6 +412,12 @@ while True:
         Tap_Press=True
     else:
         Tap_Press=False
+
+    if key[K_RETURN]:
+        speed*=4
+        Enter_Press=True
+    else:
+        Enter_Press=False
 
 
 
@@ -464,23 +472,30 @@ while True:
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
             Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
-
-    Time=time.clock()-Startzeit-Pause_Time
-    if(Time<100):
-        if(Time<10):
-            Time_Text = glLibObjText("Time "+str(round(Time,2)),Font_ALGER_100,(0,200,200))
+    if(Enter_Press==False and Tap_Press==False):
+        Time=time.clock()-Startzeit-Pause_Time
+        if(Time<100):
+            if(Time<10):
+                Time_Text = glLibObjText("Time "+str(round(Time,2)),Font_ALGER_100,(0,200,200))
+            else:
+                Time_Text = glLibObjText("Time "+str(round(Time,1)),Font_ALGER_100,(0,200,200))
         else:
-            Time_Text = glLibObjText("Time "+str(round(Time,1)),Font_ALGER_100,(0,200,200))
+            Time_Text = glLibObjText("Time "+str(int(round(Time,0))),Font_ALGER_100,(0,200,200))
     else:
-        Time_Text = glLibObjText("Time "+str(int(round(Time,0))),Font_ALGER_100,(0,200,200))
-
-    #Time_Text = glLibObjText("Time "+str(round(time.clock(),1)),Font_ALGER_100,(255,128,50))
-    if(Tap_Press==False):
+        ZPos=int(round(Level_pos,0))
+        if(ZPos<10):
+            Time_Text = glLibObjText("ZPos 00"+str(ZPos),Font_ALGER_100,(0,200,255))
+        elif(ZPos<100):
+            Time_Text = glLibObjText("ZPos 0"+str(ZPos),Font_ALGER_100,(0,200,255))
+        else:
+            Time_Text = glLibObjText("ZPos "+str(ZPos),Font_ALGER_100,(0,200,255))
+        
+        
+    if(Tap_Press==False):  
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
-    else:
+    else:            
         FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/4),0))),Font_ALGER_100,(255,128,50))
-    #Leben_Text = glLibObjText('Leben '.join(Leben),Font_ALGER_100,(255,128,50))
-    #Time_Text
+    
 
     glScalef(4,4,4);
     glTranslated(-7.7,-0.5,0)
