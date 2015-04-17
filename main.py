@@ -49,6 +49,8 @@ Level_length=500
 BossPrepare=False
 BossScene=False
 
+FastForward=False
+TurnStatusbar=False
 more_FPS=False
 
 
@@ -73,6 +75,15 @@ def GenerateCube(z=-100):
             for y in range(-1,2):
                 Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level-1],255,0,0,100,1))
         Hearts_count+=9
+
+
+def LevelReload():
+    Level_pos=0
+    BossPrepare=False
+    BossScene=False
+    Cubes = []
+    for z in range(-110,-10,18-Level):
+        GenerateCube(z)
 
 
 class SampleListener(Leap.Listener):
@@ -329,6 +340,19 @@ while True:
                 Pause_Time+=time.clock()-Pause_Startzeit
                 frame_time_alt=time.clock()
 
+
+            if event.key == K_LSHIFT or event.key == K_RSHIFT :
+                if(FastForward==False):
+                    FastForward=True
+                else:
+                   FastForward=False
+
+            if event.key == K_RETURN:
+                if(TurnStatusbar==False):
+                    TurnStatusbar=True
+                else:
+                    TurnStatusbar=False
+
             #More FPS Funkttion (no Stars)
             if event.key == K_F2:
                 if(more_FPS==False):
@@ -357,12 +381,7 @@ while True:
                 elif(Level>10):
                     Level=10
 
-                Level_pos=0
-                BossPrepare=False
-                BossScene=False
-                Cubes = []
-                for z in range(-110,-10,18-Level):
-                    GenerateCube(z)
+                LevelReload()
                         
                 
             if event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
@@ -372,12 +391,18 @@ while True:
                 else:
                     Level=1
 
-                Level_pos=0
-                BossPrepare=False
-                BossScene=False
-                Cubes = []
-                for z in range(-110,-10,18-Level):
-                    GenerateCube(z)
+                LevelReload()
+
+
+            if(event.key >= K_0 and event.key <= K_9):
+                Level=event.key-K_0
+                if(Level==0):
+                    Level=10
+
+                LevelReload()
+
+
+            
 
 
 ##            #Wechsle Fulscreen Modus
@@ -413,12 +438,8 @@ while True:
     else:
         Tap_Press=False
 
-    if key[K_RETURN]:
+    if(FastForward==True):
         speed*=4
-        Enter_Press=True
-    else:
-        Enter_Press=False
-
 
 
     Camera.set_target_pos(Camera_pos)
@@ -472,7 +493,7 @@ while True:
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
             Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
-    if(Enter_Press==False and Tap_Press==False):
+    if(TurnStatusbar==False and FastForward==False and Tap_Press==False):
         Time=time.clock()-Startzeit-Pause_Time
         if(Time<100):
             if(Time<10):
@@ -491,10 +512,12 @@ while True:
             Time_Text = glLibObjText("ZPos "+str(ZPos),Font_ALGER_100,(0,200,255))
         
         
-    if(Tap_Press==False):  
+    if(FastForward==False and Tap_Press==False):  
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
-    else:            
+    elif(FastForward==False or Tap_Press==False):
         FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/4),0))),Font_ALGER_100,(255,128,50))
+    else:            
+        FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/16),0))),Font_ALGER_100,(255,0,0))
     
 
     glScalef(4,4,4);
