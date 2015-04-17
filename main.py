@@ -372,43 +372,49 @@ while True:
                         counter += 1
                     break #Warscheinlich nutzlos aber für die Zukunft.
 
-            if event.key == K_x or event.key == K_PLUS or event.key == K_KP_PLUS:
-                Level+=1
-                if(Level<10):
+
+            #Sehr schöne Platz- und Ressourcensparende Lösung ohne zusätzliche Funktion :D
+            if event.key == K_x or event.key == K_PLUS or event.key == K_KP_PLUS or event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS or event.key >= K_0 and event.key <= K_9:
+                if(event.key >= K_0 and event.key <= K_9):
+                    Level=event.key-K_0
+                    if(Level==0):
+                        Level=10
+                elif event.key == K_x or event.key == K_PLUS or event.key == K_KP_PLUS:
+                    Level+=1
+                else: #elif event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
+                    Level-=1
+                
+                if(Level<10 and Level>0):
                     Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
                 elif(Level==10):
                     Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
                 elif(Level>10):
                     Level=10
-
-                LevelReload()
-                        
-                
-            if event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
-                Level-=1
-                if(Level>1):
-                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
-                else:
-                    Level=1
-
-                LevelReload()
-
-
-            if(event.key >= K_0 and event.key <= K_9):
-                Level=event.key-K_0
-                if(Level==0):
-                    Level=10
-
-                LevelReload()
-
-
-            
+                else: #elif Level<1
+                   Level=1
+                   
+                Level_pos=0
+                BossPrepare=False
+                BossScene=False
+                Cubes = []
+                for z in range(-110,-10,18-Level):
+                    GenerateCube(z)
+                    
+            if event.key == K_b:
+                Leben=7
+            elif event.key == K_n:
+                Leben-=1
+            elif event.key == K_m:
+                Leben+=1
+            elif event.key == K_COMMA:
+                Leben=99
 
 
 ##            #Wechsle Fulscreen Modus
 ##            if event.key == K_F11:
 ##                glLibWindow.toggle_fullscreen(Window)
 ##                Window.flip()
+                    
 
     if key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
         pygame.quit()
@@ -489,6 +495,8 @@ while True:
 
     if(Leben_alt<>Leben):
         Leben_alt=Leben
+        if(Leben<0): Leben=0
+        if(Leben>99): Leben=99
         if(Leben<10):
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
