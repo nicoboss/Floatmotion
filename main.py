@@ -47,7 +47,10 @@ Level_length=500
 BossPrepare=False
 BossScene=False
 
-FastForward=False
+FastForward=1.0
+Backslash_Active=False
+Backquote_Active=False
+Shift_Active=False
 TurnStatusbar=False
 more_FPS=False
 
@@ -339,12 +342,56 @@ while True:
                 Pause_Time+=time.clock()-Pause_Startzeit
                 frame_time_alt=time.clock()
 
-
-            if event.key == K_LSHIFT or event.key == K_RSHIFT :
-                if(FastForward==False):
-                    FastForward=True
+            #print event.key
+            
+            if event.key == K_RIGHTBRACKET : #Key kinks von Shift
+                if(FastForward>=9):
+                    FastForward+=1
+                elif(FastForward>=5):
+                    FastForward+=0.5
+                elif(FastForward>=2):
+                    FastForward+=0.2
                 else:
-                   FastForward=False
+                    FastForward+=0.1
+
+            if event.key == K_BACKSLASH : #Key kinks von Shift
+                if(FastForward>=9):
+                    FastForward-=1
+                elif(FastForward>=5):
+                    FastForward-=0.5
+                elif(FastForward>=2):
+                    FastForward-=0.2
+                else:
+                    FastForward-=0.1
+            
+            
+            #SlowForward 0.5x
+            if event.key == 60 : #Key kinks von Shift
+                if(BackslashL_Active==False):
+                    BackslashL_Active=True
+                    FastForward*=0.5
+                else:
+                   BackslashL_Active=False
+                   FastForward*=2
+
+            #FastForward 2x
+            if event.key == K_BACKQUOTE :
+                if(Backquote_Active==False):
+                    Backquote_Active=True
+                    FastForward*=2
+                else:
+                   Backquote_Active=False
+                   FastForward*=0.5
+
+            #FastForward 4x
+            if event.key == K_LSHIFT or event.key == K_RSHIFT :
+                if(Shift_Active==False):
+                    Shift_Active=True
+                    FastForward*=4
+                else:
+                    Shift_Active=False
+                    FastForward*=0.25
+                    
 
             if event.key == K_RETURN:
                 if(TurnStatusbar==False):
@@ -442,12 +489,16 @@ while True:
     if key[K_LCTRL] or key[K_RCTRL] or key[K_BACKSPACE]: Camera_pos = [0,0.5,6]
 
     if key[K_TAB]:
-        speed*=4
         Tap_Press=True
     else:
         Tap_Press=False
 
-    if(FastForward==True):
+
+    if(Backslash_Active==True):
+        speed*=0.5
+    if(Backquote_Active==True):
+        speed*=2
+    if(Shift_Active==True):
         speed*=4
 
 
@@ -495,6 +546,7 @@ while True:
     #glLibTexturing(True)
 
     #Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
+    
 
     if(Leben_alt<>Leben):
         Leben_alt=Leben
@@ -521,14 +573,24 @@ while True:
             Time_Text = glLibObjText("ZPos 0"+str(ZPos),Font_ALGER_100,(0,200,255))
         else:
             Time_Text = glLibObjText("ZPos "+str(ZPos),Font_ALGER_100,(0,200,255))
-        
-        
-    if(FastForward==False and Tap_Press==False):  
+
+    
+    #print FastForward
+    if(Tap_Press==False):
+        FastForward_Speed=FastForward
+    else:
+        FastForward_Speed=FastForward*4
+    
+    if(FastForward==1.0 and Tap_Press==False):  
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
-    elif(FastForward==False or Tap_Press==False):
-        FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/4),0))),Font_ALGER_100,(255,128,50))
-    else:            
-        FPS_Text = glLibObjText("FPS "+str(int(round(60/(speed/16),0))),Font_ALGER_100,(255,0,0))
+    elif(FastForward_Speed==1):
+        FPS_Text = glLibObjText("FF 4",Font_ALGER_100,(255,128,50))
+    elif(FastForward_Speed<1):
+        FPS_Text = glLibObjText("FF "+str(round(FastForward_Speed,1)),Font_ALGER_100,(128,128,255))
+    elif(FastForward_Speed>=10):
+        FPS_Text = glLibObjText("FF "+str(int(round(FastForward_Speed,0))),Font_ALGER_100,(((FastForward*8)+127),100*(Tap_Press+1),(FastForward*8)))
+    else:
+        FPS_Text = glLibObjText("FF "+str(round(FastForward_Speed,1)),Font_ALGER_100,(((FastForward*8)+127),100*(Tap_Press+1),(FastForward*8)))
     
 
     glScalef(4,4,4);
