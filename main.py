@@ -8,7 +8,7 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-- End Screen
+- End Screen Keine Rückmeldung
 - Kollisions Sounds
 - BossCube als Fenster Icon
 - Überdenken der GameOver Sphere Textur
@@ -399,8 +399,12 @@ while True:
                 Cubes = []
                 for z in range(-110,-10,18-Level):
                     GenerateCube(z)
-                    
-            if event.key == K_b:
+
+            if event.key == K_c:
+                Leben=1
+            elif event.key == K_v:
+                Leben=3
+            elif event.key == K_b:
                 Leben=7
             elif event.key == K_n:
                 Leben-=1
