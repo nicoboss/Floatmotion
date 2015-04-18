@@ -63,6 +63,7 @@ AutoCloseWindow false
 ShowInstDetails show
 
 ;--------------------------------
+MessageBox MB_OK "WriteINIStr failed"
 
 Section "" ; empty string makes it hidden, so would starting with -
   SetOutPath $INSTDIR
@@ -76,7 +77,7 @@ Section "" ; empty string makes it hidden, so would starting with -
   CreateDirectory "$INSTDIR\textures"
   
   
-  #File /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
+  File /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
   SetOutPath $INSTDIR\Fonts
   File .\Fonts\*
   SetOutPath $INSTDIR\img
@@ -103,12 +104,22 @@ Section "" ; empty string makes it hidden, so would starting with -
 
 SectionEnd
 
+
+Section "Install Source Code"
+
+  SectionIn 1 2 3
+  SetOutPath $INSTDIR
+  File /r /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
+
+SectionEnd
+
+
 Section "Install Python 2.7.7 (required)"
 
   SectionIn 1 2 3 4
   
   SetOutPath $INSTDIR
-  #File python-2.7.7.msi
+  File python-2.7.7.msi
 
   SetOutPath $INSTDIR\cpdest
   CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
@@ -122,7 +133,7 @@ Section "pygame"
   SectionIn 1 2 3 4
   
   SetOutPath $INSTDIR\pygame
-  #File /r .\pygame\
+  File /r .\pygame\
 
 SectionEnd
 
@@ -131,16 +142,7 @@ Section "pyOpenGL"
   SectionIn 1 2 3 4
   
   SetOutPath $INSTDIR\OpenGL
-  #File /r .\OpenGL\
-
-SectionEnd
-
-
-Section "Install Source Code"
-
-  SectionIn 1 2 3
-  SetOutPath $INSTDIR
-  #File /r /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
+  File /r .\OpenGL\
 
 SectionEnd
 SectionGroupEnd
@@ -193,6 +195,19 @@ Section "" ; empty string makes it hidden, so would starting with -
   
 
 SectionEnd
+
+
+Function .onSelChange
+
+  SectionGetText ${TESTIDX} $0
+  StrCmp $0 "" e
+    SectionSetText ${TESTIDX} ""
+  Goto e2
+e:
+  SectionSetText ${TESTIDX} "TextInSection"
+e2:
+
+FunctionEnd
 
 
 ;--------------------------------
