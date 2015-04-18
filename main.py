@@ -48,7 +48,7 @@ BossPrepare=False
 BossScene=False
 
 FastForward=1.0
-Backslash_Active=False
+BackslashL_Active=False
 Backquote_Active=False
 Shift_Active=False
 TurnStatusbar=False
@@ -343,6 +343,9 @@ while True:
                 frame_time_alt=time.clock()
 
             #print event.key
+                
+            if(event.key == K_EQUALS):
+                FastForward=1.0
             
             if event.key == K_RIGHTBRACKET : #Key kinks von Shift
                 if(FastForward>=9):
@@ -494,14 +497,6 @@ while True:
         Tap_Press=False
 
 
-    if(Backslash_Active==True):
-        speed*=0.5
-    if(Backquote_Active==True):
-        speed*=2
-    if(Shift_Active==True):
-        speed*=4
-
-
     Camera.set_target_pos(Camera_pos)
     Staturbar_Camera.set_target_pos(Camera_pos)
 
@@ -556,7 +551,7 @@ while True:
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
             Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
-    if(TurnStatusbar==False and FastForward==False and Tap_Press==False):
+    if(TurnStatusbar==False):
         Time=time.clock()-Startzeit-Pause_Time
         if(Time<100):
             if(Time<10):
@@ -574,12 +569,17 @@ while True:
         else:
             Time_Text = glLibObjText("ZPos "+str(ZPos),Font_ALGER_100,(0,200,255))
 
-    
+
+    if(FastForward>16):
+        FastForward=16
+        
     #print FastForward
     if(Tap_Press==False):
         FastForward_Speed=FastForward
     else:
         FastForward_Speed=FastForward*4
+
+    speed*=FastForward_Speed
     
     if(FastForward==1.0 and Tap_Press==False):  
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
