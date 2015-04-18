@@ -91,7 +91,25 @@ Section "" ; empty string makes it hidden, so would starting with -
 
 SectionEnd
 
-Section "Install Libarries"
+Section "Install Floatmotion"
+
+  SectionIn 1 2 3
+
+  SetOutPath $INSTDIR\cpdest
+  CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
+
+SectionEnd
+
+Section "Install Portable version to Desktop"
+
+  SectionIn 1 2 3
+
+  SetOutPath $INSTDIR\cpdest
+  CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
+
+SectionEnd
+
+Section "Install Source Code"
 
   SectionIn 1 2 3
 
