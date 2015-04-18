@@ -1,0 +1,11 @@
+('C:\\Users\\nico_000\\Documents\\Floatmotion\\build\\main\\out00-PKG.pkg',
+ {'BINARY': 1,
+  'DATA': 1,
+  'EXECUTABLE': 1,
+  'EXTENSION': 1,
+  'PYMODULE': 1,
+  'PYSOURCE': 1},
+ [('out00-PYZ.pyz', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\build\\main\\out00-PYZ.pyz', 'PYZ'), ('struct', 'C:\\Anaconda\\lib\\struct.pyc', 'PYMODULE'), ('pyi_os_path', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\pyi_os_path.pyc', 'PYMODULE'), ('pyi_archive', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\pyi_archive.pyc', 'PYMODULE'), ('pyi_importers', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\pyi_importers.pyc', 'PYMODULE'), ('_pyi_bootstrap', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\_pyi_bootstrap.py', 'PYSOURCE'), ('pyi_carchive', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\pyi_carchive.py', 'PYSOURCE'), ('_pyi_egg_install.py', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\_pyi_egg_install.py', 'PYSOURCE'), ('pyi_rth_pkgres', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\rthooks\\pyi_rth_pkgres.py', 'PYSOURCE'), ('pyi_rth_win32comgenpy', 'C:\\Anaconda\\lib\\site-packages\\PyInstaller\\loader\\rthooks\\pyi_rth_win32comgenpy.py', 'PYSOURCE'), ('main', 'main.py', 'PYSOURCE'), ('main.exe.manifest', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\build\\main\\main.exe.manifest', 'BINARY')],
+ True,
+ None,
+ False)
