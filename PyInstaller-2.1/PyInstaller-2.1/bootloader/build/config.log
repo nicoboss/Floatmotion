@@ -1,0 +1,134 @@
+# project  configured on Sat Apr 18 17:22:00 2015 by
+# waf 1.5.18 (abi 7, python 20707f0 on win32)
+# using ./waf configure build install
+#
+
+----------------------------------------
+Checking for program gcc or cc
+  find program=['gcc', 'cc'] paths=[] var='CC'
+  -> 'C:\\Anaconda\\Scripts\\gcc.bat'
+
+----------------------------------------
+Checking for program cpp
+  find program=['cpp'] paths=[] var='CPP'
+  -> 'C:\\Anaconda\\Scripts\\cpp.bat'
+
+----------------------------------------
+Checking for program ar
+  find program=['ar'] paths=[] var='AR'
+  -> 'C:\\Anaconda\\Scripts\\ar.bat'
+
+----------------------------------------
+Checking for program ranlib
+  find program=['ranlib'] paths=[] var='RANLIB'
+  -> 'C:\\Anaconda\\Scripts\\ranlib.bat'
+
+----------------------------------------
+Checking for library user32
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import', '-Wl,-Bdynamic', '-luser32']
+yes
+
+----------------------------------------
+Checking for library comctl32
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import', '-Wl,-Bdynamic', '-lcomctl32']
+yes
+
+----------------------------------------
+Checking for library kernel32
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import', '-Wl,-Bdynamic', '-lkernel32']
+yes
+
+----------------------------------------
+Checking for library ws2_32
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import', '-Wl,-Bdynamic', '-lws2_32']
+yes
+
+----------------------------------------
+Checking for flags -mwindows
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-mwindows', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import']
+yes
+
+----------------------------------------
+Checking for flags -mms-bitfields
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-mms-bitfields', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import']
+yes
+
+----------------------------------------
+Checking for flags -m32
+==>
+
+int main() {
+	return 0;
+}
+
+<==
+[1/2] [32mcc: build\.conf_check_0\test.c -> build\.conf_check_0\testbuild\default\test_1.o
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', '-Wdeclaration-after-statement', '-Werror', '-mms-bitfields', '-m32', '-I../zlib', '-I..\\common', '-DWIN32', '..\\test.c', '-c', '-o', 'default\\test_1.o']
+[2/2] [33mcc_link: build\.conf_check_0\testbuild\default\test_1.o -> build\.conf_check_0\testbuild\default\testprog.exe
+[0m['C:\\Anaconda\\Scripts\\gcc.bat', 'default\\test_1.o', '-o', 'C:\\Users\\nico_000\\Documents\\Floatmotion\\PyInstaller-2.1\\PyInstaller-2.1\\bootloader\\build\\.conf_check_0\\testbuild\\default\\testprog.exe', '-Wl,--enable-auto-import']
+yes
+
+----------------------------------------
+Checking for program windres
+  find program=['windres'] paths=[] var='WINRC'
+  -> 'C:\\Anaconda\\Scripts\\windres.bat'
