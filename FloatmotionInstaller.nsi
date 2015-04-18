@@ -76,8 +76,21 @@ Section "" ; empty string makes it hidden, so would starting with -
   CreateDirectory "$INSTDIR\textures"
   
   
-  File /r /x FloatmotionSetup.exe *
+  #File /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
+  SetOutPath $INSTDIR\Fonts
+  File .\Fonts\*
+  SetOutPath $INSTDIR\img
+  File .\img\*
+  SetOutPath $INSTDIR\obj
+  File .\obj\*
+  SetOutPath $INSTDIR\OpenGLLibrary
+  File /x *.py .\OpenGLLibrary\*
+  SetOutPath $INSTDIR\sound
+  File .\sound\*
+  SetOutPath $INSTDIR\textures
+  File .\textures\*
 
+  SetOutPath $INSTDIR
   ; write reg info
   WriteRegStr HKLM SOFTWARE\Floatmotion "Install_Dir" "$INSTDIR"
 
@@ -87,45 +100,59 @@ Section "" ; empty string makes it hidden, so would starting with -
 
   
   WriteUninstaller "Uninstall.exe"
+
+SectionEnd
+
+Section "Install Python 2.7.7 (required)"
+
+  SectionIn 1 2 3 4
   
-
-SectionEnd
-
-Section "Install Floatmotion"
-
-  SectionIn 1 2 3
+  SetOutPath $INSTDIR
+  #File python-2.7.7.msi
 
   SetOutPath $INSTDIR\cpdest
   CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
 
 SectionEnd
 
-Section "Install Portable version to Desktop"
+SectionGroup /e "Install required Libarries"
 
-  SectionIn 1 2 3
+Section "pygame"
 
-  SetOutPath $INSTDIR\cpdest
-  CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
+  SectionIn 1 2 3 4
+  
+  SetOutPath $INSTDIR\pygame
+  #File /r .\pygame\
 
 SectionEnd
+
+Section "pyOpenGL"
+
+  SectionIn 1 2 3 4
+  
+  SetOutPath $INSTDIR\OpenGL
+  #File /r .\OpenGL\
+
+SectionEnd
+
 
 Section "Install Source Code"
 
   SectionIn 1 2 3
-
-  SetOutPath $INSTDIR\cpdest
-  CopyFiles "$WINDIR\*.ini" "$INSTDIR\cpdest" 0
+  SetOutPath $INSTDIR
+  #File /r /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
 
 SectionEnd
+SectionGroupEnd
 
-SectionGroup /e Shortcuts
+SectionGroup /e "Shortcuts"
 
 Section "Desktop"
 
   SectionIn 1 2 3
 
   SetOutPath $INSTDIR ; for working directory
-  CreateShortcut "$DESKTOP\Big NSIS Test\Uninstall BIG NSIS Test.lnk" "$INSTDIR\Uninstall.exe" ; use defaults for parameters, icon, etc.
+  CreateShortcut "$DESKTOP\Uninstall Floatmotion.lnk" "$INSTDIR\Uninstall.exe" ; use defaults for parameters, icon, etc.
 
 SectionEnd
 
@@ -135,13 +162,13 @@ Section "Startprograms"
 
   CreateDirectory "$SMPROGRAMS\Floatmotion"
   SetOutPath $INSTDIR ; for working directory
-  CreateShortcut "$SMPROGRAMS\Floatmotion\Uninstall Floatmotion.lnk" "$INSTDIR\bt-uninst.exe" ; use defaults for parameters, icon, etc.
+  CreateShortcut "$SMPROGRAMS\Floatmotion\Uninstall Floatmotion.lnk" "$INSTDIR\Uninstall.exe" ; use defaults for parameters, icon, etc.
 SectionEnd
 SectionGroupEnd
 
 
 
-Section "Start Floatmotion after Setup" TESTIDX
+Section "Start Floatmotion after setup" TESTIDX
 
   SectionIn 1 2 3
 
@@ -153,13 +180,26 @@ Section "Start Floatmotion after Setup" TESTIDX
 
 SectionEnd
 
+Section "" ; empty string makes it hidden, so would starting with -
+  SetOutPath $INSTDIR
+  WriteUninstaller "Uninstall.exe"
+
+  ; write reg info
+  WriteRegStr HKLM SOFTWARE\Floatmotion "Install_Dir" "$INSTDIR"
+
+  ; write uninstall strings
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Floatmotion" "DisplayName" "Floatmotion (remove only)"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Floatmotion" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+  
+
+SectionEnd
 
 
 ;--------------------------------
 
 ; Uninstaller
 
-UninstallText "This will uninstall example2. Hit next to continue."
+UninstallText "This will uninstall Floatmotion. Hit next to continue."
 UninstallIcon "${NSISDIR}\Contrib\Graphics\Icons\nsis1-uninstall.ico"
 
 Section "Uninstall"
