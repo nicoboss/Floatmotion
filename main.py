@@ -53,6 +53,64 @@ Shift_Active=False
 TurnStatusbar=False
 more_FPS=False
 
+Fulscreen=False
+Screenshotpath=".\\"
+INSTDIR=".\\"
+PROFILE=".\\"
+DOCUMENTS=".\\"
+PICTURES=".\\"
+DESKTOP=".\\"
+
+#Ich habe sogar den ini reader selbst programmirt!
+#Ih habe absichtlich kein # implementiert da es sonst probleme geben würde wenn der Pfad ein # enhalten würde.
+with open("config.ini") as f:
+    for line in f:
+        line=line.replace('\n', "") 
+        words=line.split('=')
+        if(words.__len__()==2):
+            if(section=="[Path]" and words[0]=="INSTDIR"):
+                INSTDIR=words[1]
+            if(section=="[Path]" and words[0]=="PROFILE"):
+                PROFILE=words[1]
+            if(section=="[Path]" and words[0]=="DOCUMENTS"):
+                DOCUMENTS=words[1]
+            if(section=="[Path]" and words[0]=="PICTURES"):
+                PICTURES=words[1]
+            if(section=="[Path]" and words[0]=="DESKTOP"):
+                DESKTOP=words[1]
+                
+            if(section=="[Graphics]" and words[0]=="Fullscreen"):
+                if(words[1]=="true"): #Erst wird true geprüft da defult
+                    Fulscreen=True
+                elif(words[1]=="false"):
+                    Fulscreen=False
+                else:
+                    print "Error in config.ini File Line:",line,"Fullscreen can only be true or false. To not interrupt the programmstart it was automaticly set to true."
+                    Fulscreen=True
+
+            if(section=="[Graphics]" and words[0]=="noStars(more_FPS)"):
+                if(words[1]=="false"): #Erst wird false üft da defult
+                    more_FPS=False
+                elif(words[1]=="true"):
+                    more_FPS=True
+                else:
+                    print "Error in config.ini File Line:",line,"noStars(more_FPS) can only be true or false. To not interrupt the programmstart it was automaticly set to false."
+                    more_FPS=False
+
+            if(section=="[Scoreboard]" and words[0]=="TurnStatusbar"):
+                if(words[1]=="false"): #Erst wird false geprüft da defult
+                    TurnStatusbar=False
+                elif(words[1]=="true"):
+                    TurnStatusbar=True
+                else:
+                    print "Error in config.ini File Line:",line,"TurnStatusbar can only be true or false. To not interrupt the programmstart it was automaticly set to false."
+                    TurnStatusbar=False
+            
+            print line.split('=')
+        else:
+            section=line
+
+
 
 def GenerateCube(z=-100):
     Cubes_count=0
@@ -196,7 +254,7 @@ Cube_speed_z=[0.05,0.055,0.06,0.065,0.07,0.075,0.08,0.085,0.09,0.1]
 Transparence=200
 r=0
 GenerateNewArea_Schutzzeit=0
-Window = glLibWindow(Screen,False,System_Icon,"Float Motion - Nico Bosshard",False)
+Window = glLibWindow(Screen,Fulscreen,System_Icon,"Float Motion - Nico Bosshard",False)
 View3D = glLibView3D((0,0,Screen[0],Screen[1]-100),45)
 Statusbar = glLibView3D((0,Screen[1]-100,Screen[0],100),45)
 
@@ -309,13 +367,13 @@ while True:
             #Hilfe Funktion
             if event.key == K_F1 or event.key == K_HELP:
                 webbrowser.open("Help.mht")
-            
+
 
             #Pause Funktionn
             if event.key == K_PAUSE or event.key == K_SPACE or event.key == K_F1 or event.key == K_HELP:
                 Pause_Startzeit=time.clock()
 
-                #Der dept test wird temporär ausgeshaltet, dammit keine Würfel vor der Schrift gezeichnet werden können.
+                #Der depth test wird temporär ausgeshaltet, dammit keine Würfel vor der Schrift gezeichnet werden können.
                 glDisable(GL_DEPTH_TEST)
                 glTranslated(-1.4,0.8,2)
                 Pause_Text.draw()
@@ -361,11 +419,11 @@ while True:
                 frame_time_alt=time.clock()
 
             #print event.key
-                
+
             if(event.key == K_EQUALS):
                 FastForward=1.0
-            
-            if event.key == K_RIGHTBRACKET : #Key kinks von Shift
+
+            if event.key == K_RIGHTBRACKET:
                 if(FastForward>=9):
                     FastForward+=1
                 elif(FastForward>=5):
@@ -375,7 +433,7 @@ while True:
                 else:
                     FastForward+=0.1
 
-            if event.key == K_BACKSLASH : #Key kinks von Shift
+            if event.key == K_BACKSLASH:
                 if(FastForward>=9):
                     FastForward-=1
                 elif(FastForward>=5):
@@ -384,10 +442,10 @@ while True:
                     FastForward-=0.2
                 else:
                     FastForward-=0.1
-            
-            
+
+
             #SlowForward 0.5x
-            if event.key == 60 : #Key kinks von Shift
+            if event.key == 60 : #Key links von Shift
                 if(BackslashL_Active==False):
                     BackslashL_Active=True
                     FastForward*=0.5
@@ -412,7 +470,7 @@ while True:
                 else:
                     Shift_Active=False
                     FastForward*=0.25
-                    
+
 
             if event.key == K_RETURN:
                 if(TurnStatusbar==False):
@@ -430,12 +488,13 @@ while True:
             #Screenshotspeicherungsfunktion
             if event.key == K_F5:
                 while True:
-                    try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png")
-                    except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png");break
+                    print Screenshotpath+time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png"
+                    try:pygame.image.load(Screenshotpath+time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png")
+                    except:glLibSaveScreenshot(Screenshotpath+time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+".png");break
                     counter = 1
                     while True:
-                        try:pygame.image.load(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png")
-                        except:glLibSaveScreenshot(time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png");break
+                        try:pygame.image.load(Screenshotpath+time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png")
+                        except:glLibSaveScreenshot(Screenshotpath+time.strftime("%a, %d %b %Y %H-%M-%S", time.gmtime())+" ("+str(counter)+").png");break
                         counter += 1
                     break #Warscheinlich nutzlos aber für die Zukunft.
 
@@ -450,7 +509,7 @@ while True:
                     Level+=1
                 else: #elif event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
                     Level-=1
-                
+
                 if(Level<10 and Level>0):
                     Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-(Level*20),Level*5))
                 elif(Level==10):
@@ -459,7 +518,7 @@ while True:
                     Level=10
                 else: #elif Level<1
                    Level=1
-                   
+
                 Level_pos=0
                 BossPrepare=False
                 BossScene=False
@@ -485,7 +544,7 @@ while True:
 ##            if event.key == K_F11:
 ##                glLibWindow.toggle_fullscreen(Window)
 ##                Window.flip()
-                    
+
 
     if key[K_a]: Player.x+=-0.01*speed
     if key[K_w]: Player.y+=0.01*speed
@@ -506,7 +565,7 @@ while True:
     if key[K_DOWN]: Camera_pos[2]+=1*speed
     if key[K_LEFTBRACKET]: Camera_pos[1]=1*speed
     if key[39]: Camera_pos[1]-=1*speed
-    
+
     if key[K_LCTRL] or key[K_RCTRL] or key[K_BACKSPACE]: Camera_pos = [0,0.5,6]
 
 
@@ -560,7 +619,7 @@ while True:
     #glLibTexturing(True)
 
     #Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
-    
+
 
     if(Leben_alt<>Leben):
         Leben_alt=Leben
@@ -591,7 +650,7 @@ while True:
 
     if(FastForward>16):
         FastForward=16
-        
+
     #print FastForward
     if(Tap_Press==False):
         FastForward_Speed=FastForward
@@ -599,8 +658,8 @@ while True:
         FastForward_Speed=FastForward*4
 
     speed*=FastForward_Speed
-    
-    if(FastForward==1.0 and Tap_Press==False):  
+
+    if(FastForward==1.0 and Tap_Press==False):
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
     elif(FastForward_Speed==1):
         FPS_Text = glLibObjText("FF 4",Font_ALGER_100,(255,128,50))
@@ -610,7 +669,7 @@ while True:
         FPS_Text = glLibObjText("FF "+str(int(round(FastForward_Speed,0))),Font_ALGER_100,(((FastForward*8)+127),100*(Tap_Press+1),(FastForward*8)))
     else:
         FPS_Text = glLibObjText("FF "+str(round(FastForward_Speed,1)),Font_ALGER_100,(((FastForward*8)+127),100*(Tap_Press+1),(FastForward*8)))
-    
+
 
     glScalef(4,4,4);
     glTranslated(-7.7,-0.5,0)
@@ -672,12 +731,12 @@ while True:
                     for Cube in Cubes:
                         Cube.z-=60
 
-                    for i in range(int(round(600/speed))):
+                    for i in range(int(round(400/(speed*(more_FPS+1))))):
                         x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                         y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                         z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                         magnitude  = sqrt(x**2 + y**2 + z**2)
-                        Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
+                        Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(300/(speed*(more_FPS+1)))))
 
             print "Leben: ",Leben
 
@@ -755,9 +814,8 @@ while True:
             pygame.mixer.music.play(-1)
             Pause_Time=0
             Startzeit=time.clock()
+            
     elif(BossScene==True):
-
-
         Object_ID=-1
         glScalef(0.1,0.1,0.1);
         for Particle in BossCube_Particles:
@@ -769,7 +827,7 @@ while True:
             Particle.rotate_x+=random.uniform(0,2)*speed
             Particle.rotate_y=random.uniform(0,2)*speed
             Particle.rotate_z+=random.uniform(0,2)*speed
-             
+
             glRotatef(Particle.rotate_x,0,1,0)
             glRotatef(Particle.rotate_y,1,0,0)
             glRotatef(Particle.rotate_z,1,0,0)
@@ -779,9 +837,9 @@ while True:
             glRotatef(-Particle.rotate_z,1,0,0)
             glRotatef(-Particle.rotate_y,1,0,0)
             glRotatef(-Particle.rotate_x,0,1,0)
-            
+
             Particle.time-=1
-            
+
 ##            if(Particle.time==0):
 ##                BossCube_Particles.pop(Object_ID)
         glScalef(10,10,10);
@@ -792,12 +850,12 @@ while True:
                 pygame.mixer.music.load(Sound_LevelUp)
                 pygame.mixer.music.play(-1)
                 Player.a=220
-                for i in range(int(round(1500/speed))):
+                for i in range(int(round(1200/(speed*((more_FPS*2)+1))))):
                             x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                             y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                             z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                             magnitude  = sqrt(x**2 + y**2 + z**2)
-                            BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),BossCube.x,BossCube.y,BossCube.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,round(800/speed)))
+                            BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),BossCube.x,BossCube.y,BossCube.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,600/(speed*((more_FPS*2.25)+1))))
 
             BossCube.x+=BossCube.speed_x*speed
             BossCube.y+=BossCube.speed_y*speed
@@ -820,7 +878,7 @@ while True:
             glTranslated(-BossCube.x,-BossCube.y,-BossCube.z)
 
         else:
-            if(BossCube_Particles[0].time<300):
+            if(BossCube_Particles[0].time<200):
                 glLibColor((255,255,255,255))
                 glTranslated(-1.3,0.6,2)
                 BossCube_Level.draw()
@@ -847,7 +905,7 @@ while True:
                         #End Screen
                         pygame.mixer.music.load(Sound[2])
                         pygame.mixer.music.play(-1)
-                        
+
                         Level=10
                         View3D = glLibView3D((0,0,Screen[0],Screen[1]),45)
                         Window.clear()
@@ -889,14 +947,14 @@ while True:
                             #-3.6-0.4+0.8-1.46+0.05+1.45+0.4=-2.76 => 2.76
                             #3-0.9-0.9-1.2-0.9-1.2-0.9=-3 => 3
                             glTranslated(2.76,3,0)
-                            
+
                             frame_time=time.clock()
                             speed=(frame_time-frame_time_alt)*60
                             frame_time_alt=frame_time
 
                             EndCutscene_key()
                             Window.flip()
-                            
+
 
 
                         #glTranslated(0,0,-100)
@@ -950,7 +1008,7 @@ while True:
                                 Particle.rotate_x+=random.uniform(0,2)*speed
                                 Particle.rotate_y=random.uniform(0,2)*speed
                                 Particle.rotate_z+=random.uniform(0,2)*speed
-                                 
+
                                 glRotatef(Particle.rotate_x,0,1,0)
                                 glRotatef(Particle.rotate_y,1,0,0)
                                 glRotatef(Particle.rotate_z,1,0,0)
@@ -960,7 +1018,7 @@ while True:
                                 glRotatef(-Particle.rotate_z,1,0,0)
                                 glRotatef(-Particle.rotate_y,1,0,0)
                                 glRotatef(-Particle.rotate_x,0,1,0)
-                                
+
                                 Particle.time-=1
 
                             EndCutscene_key()

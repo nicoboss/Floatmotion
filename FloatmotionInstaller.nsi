@@ -39,6 +39,8 @@ LicenseData "LICENSE"
 
 RequestExecutionLevel admin
 
+Var SelectionWarning_OK
+
 ;--------------------------------
 
 Page license
@@ -65,7 +67,6 @@ ShowInstDetails show
 ;--------------------------------
 
 Section "" ; empty string makes it hidden, so would starting with -
-  RMDir "$TEMP\SelectionWarning_OK\"
   SetOutPath $INSTDIR
   
   CreateDirectory "$INSTDIR\Fonts"
@@ -91,6 +92,20 @@ Section "" ; empty string makes it hidden, so would starting with -
   File .\textures\*
 
   SetOutPath $INSTDIR
+  
+  
+  CreateDirectory "$PICTURES\Floatmotion\"
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "Screenshotpath" "$PICTURES\Floatmotion\"
+  
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "INSTDIR" "$INSTDIR"
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "PROFILE" "$PROFILE"
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "DOCUMENTS" "$DOCUMENTS"
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "PICTURES" "$PICTURES"
+  WriteINIStr "$INSTDIR\config.ini"  "Path" "DESKTOP" "$DESKTOP"
+  WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Fullscreen" "true"
+  WriteINIStr "$INSTDIR\config.ini"  "Graphics" "noStars(more_FPS)" "false"
+  WriteINIStr "$INSTDIR\config.ini"  "Scoreboard" "TurnStatusbar" "false"
+
   ; write reg info
   WriteRegStr HKLM SOFTWARE\Floatmotion "Install_Dir" "$INSTDIR"
 
@@ -162,7 +177,7 @@ SectionGroupEnd
 
 
 
-Section "Start Floatmotion after setup" TESTIDX
+Section "Start Floatmotion after setup"
 
   SectionIn 1 2
 
@@ -171,7 +186,7 @@ Section "Start Floatmotion after setup" TESTIDX
   #ExecShell "open" '"$INSTDIR"'
 SectionEnd
 
-Section "Open Help file after setup" TESTIDX
+Section "Open Help file after setup"
 
   SectionIn 1 2
 
@@ -194,11 +209,9 @@ SectionEnd
 
 
 Function .onSelChange
-  #StrCmp $0 "SelectionWarning_OK" +3 0 ; Doesn't works do to only local variables.
-  IfFileExists "$TEMP\SelectionWarning_OK" +3 0
+  StrCmp $SelectionWarning_OK "SelectionWarning_OK" +3 0
     MessageBox MB_OK|MB_ICONEXCLAMATION "Warning: Some of the packets you see on this page are required for my program. Unchek the requires ones only if you 100% understand what you are doing and have this packages already installed manually. For normal Users: Don't use the manually package selection. I made this page only for Developers!"
-    CreateDirectory "$TEMP\SelectionWarning_OK"
-    #StrCpy $0 "SelectionWarning_OK"
+    StrCpy $SelectionWarning_OK "SelectionWarning_OK"
 FunctionEnd
 
 
