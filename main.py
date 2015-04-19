@@ -8,12 +8,10 @@ Known Bugs:
 No Transparence by tintime generated Cubes
 
 To-Do:
-- End Screen Keine Rückmeldung VSynch?
 - Kollisions Sounds
 - BossCube als Fenster Icon
 - Überdenken der GameOver Sphere Textur
-- Löscher unützer Files wie z.B. obj
-- NSIS Installer
+- Löscher unützer Texturen
 - Comments in Surce Code
 - Start screen picture
 - Sphere Texture
@@ -86,6 +84,17 @@ def LevelReload():
     Cubes = []
     for z in range(-110,-10,18-Level):
         GenerateCube(z)
+
+def EndCutscene_key():
+    key = pygame.key.get_pressed()
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE or key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
+                pygame.quit()
+                sys.exit()
 
 
 class LeapMotionListener(Leap.Listener):
@@ -277,7 +286,7 @@ glLibTexturing(True)
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
 
-Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255,0))
 Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
 
 Pause_Startzeit=0
@@ -292,7 +301,7 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
+            if event.key == K_ESCAPE or key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
                 pygame.quit()
                 sys.exit()
 
@@ -303,7 +312,7 @@ while True:
             
 
             #Pause Funktionn
-            if event.key == K_PAUSE or event.key == K_SPACE:
+            if event.key == K_PAUSE or event.key == K_SPACE or event.key == K_F1 or event.key == K_HELP:
                 Pause_Startzeit=time.clock()
 
                 #Der dept test wird temporär ausgeshaltet, dammit keine Würfel vor der Schrift gezeichnet werden können.
@@ -318,10 +327,13 @@ while True:
                 while no_continue_key_press:
                     time.sleep(0.5)
                     for event_p in pygame.event.get():
-                        if(event.type == KEYDOWN):
-                            if(time.clock()-Pause_Startzeit>1):
-                                no_continue_key_press=False
-                                break
+                        if(event_p.type == KEYDOWN):
+                            if event_p.key == K_F1 or event.key == K_HELP:
+                                webbrowser.open("Help.mht")
+                            else:
+                                if(time.clock()-Pause_Startzeit>1):
+                                    no_continue_key_press=False
+                                    break
                     Window.flip()
                     Flip_1or2*=-1
 
@@ -440,9 +452,9 @@ while True:
                     Level-=1
                 
                 if(Level<10 and Level>0):
-                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-(Level*20),Level*5))
                 elif(Level==10):
-                    Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
+                    Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,0,128))
                 elif(Level>10):
                     Level=10
                 else: #elif Level<1
@@ -475,10 +487,6 @@ while True:
 ##                Window.flip()
                     
 
-    if key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
-        pygame.quit()
-        sys.exit()
-
     if key[K_a]: Player.x+=-0.01*speed
     if key[K_w]: Player.y+=0.01*speed
     if key[K_d]: Player.x+=0.01*speed
@@ -491,11 +499,16 @@ while True:
     if key[K_o]: Player.speed_z+=0.0003*speed
     if key[K_p]: Player.speed_z+=-0.003*speed
 
+
     if key[K_LEFT]: Camera_pos[0]-=1*speed
     if key[K_RIGHT]: Camera_pos[0]+=1*speed
     if key[K_UP]: Camera_pos[2]-=1*speed
     if key[K_DOWN]: Camera_pos[2]+=1*speed
+    if key[K_LEFTBRACKET]: Camera_pos[1]=1*speed
+    if key[39]: Camera_pos[1]-=1*speed
+    
     if key[K_LCTRL] or key[K_RCTRL] or key[K_BACKSPACE]: Camera_pos = [0,0.5,6]
+
 
     if key[K_TAB]:
         Tap_Press=True
@@ -666,7 +679,7 @@ while True:
                         magnitude  = sqrt(x**2 + y**2 + z**2)
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(400/speed)))
 
-                print Leben
+            print "Leben: ",Leben
 
             #if(Leben>0):
             for i in range(int(round(300/speed))):
@@ -825,9 +838,9 @@ while True:
                     Player.a=255
                     Level+=1
                     if(Level<10):
-                        Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,200,0))
+                        Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-(Level*20),Level*5))
                     elif(Level==10):
-                        Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,200,0))
+                        Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,0,128))
                     elif(Level<1):
                         Level=1
                     else:
@@ -880,9 +893,10 @@ while True:
                             frame_time=time.clock()
                             speed=(frame_time-frame_time_alt)*60
                             frame_time_alt=frame_time
-                            
+
+                            EndCutscene_key()
                             Window.flip()
-                            #time.sleep(0.05)
+                            
 
 
                         #glTranslated(0,0,-100)
@@ -906,6 +920,7 @@ while True:
                             speed=(frame_time-frame_time_alt)*60
                             frame_time_alt=frame_time
 
+                            EndCutscene_key()
                             Window.flip()
 
                         glTranslated(0,0,20)
@@ -947,6 +962,8 @@ while True:
                                 glRotatef(-Particle.rotate_x,0,1,0)
                                 
                                 Particle.time-=1
+
+                            EndCutscene_key()
                             Window.flip()
 
 
