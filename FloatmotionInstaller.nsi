@@ -68,7 +68,6 @@ Section "" ; empty string makes it hidden, so would starting with -
   RMDir "$TEMP\SelectionWarning_OK\"
   SetOutPath $INSTDIR
   
-  CreateDirectory "$INSTDIR\alt"
   CreateDirectory "$INSTDIR\Fonts"
   CreateDirectory "$INSTDIR\img"
   CreateDirectory "$INSTDIR\obj"
@@ -169,6 +168,15 @@ Section "Start Floatmotion after setup" TESTIDX
 
   #Exec '"$INSTDIR\main.py"'
   ExecShell "open" '"$INSTDIR\main.pyc"'
+  #ExecShell "open" '"$INSTDIR"'
+SectionEnd
+
+Section "Open Help file after setup" TESTIDX
+
+  SectionIn 1 2
+
+  #Exec '"$INSTDIR\main.py"'
+  ExecShell "open" '"$INSTDIR\Help.mht"'
   #ExecShell "open" '"$INSTDIR"'
 SectionEnd
 

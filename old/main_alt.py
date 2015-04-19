@@ -3,7 +3,10 @@
  Developed by NicoBosshard <nico@bosshome.ch>
 
  http://www.nicobosshard.ch
+
+ Required numpy and pygame to be installed or copy in this Folder. I don't put them into the installer because this is only experimentl Code.
 """
+
 import sys, math, pygame, random
 from operator import itemgetter
 

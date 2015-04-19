@@ -19,7 +19,7 @@ To-Do:
 - Sphere Texture
 - F1 Hilfe
 """
-import Leap, sys, threading, math, pygame, random, time
+import Leap, sys, threading, math, pygame, random, time, webbrowser
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
@@ -295,6 +295,11 @@ while True:
             if event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+
+
+            #Hilfe Funktion
+            if event.key == K_F1 or event.key == K_HELP:
+                webbrowser.open("Help.mht")
             
 
             #Pause Funktionn
