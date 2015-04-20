@@ -32,7 +32,7 @@ def main(file_path=None):
                                  'secosmic_lo.wav')
 
     #choose a desired audio format
-    mixer.init(11025) #raises exception on fail
+    pygame.mixer.init(11025) #raises exception on fail
 
 
     #load the sound    

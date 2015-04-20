@@ -5,16 +5,16 @@
  http://www.nicobosshard.ch
 
 Known Bugs:
-No Transparence by tintime generated Cubes
+- Nothing -
 
 To-Do:
-- Kollisions Sounds
+- Kollisions Sounds suchen
 - BossCube als Fenster Icon
 - Löscher unützer Texturen
 - Comments in Surce Code
 - Start screen picture
 - Sphere Texture
-- F1 Hilfe fertig schreiben
+- F1 Hilfe verbessern
 """
 import Leap, sys, threading, math, pygame, random, time, webbrowser
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -26,23 +26,15 @@ Sound=["./sound/Sound1.mp3","./sound/Sound2.mp3","./sound/Sound3.mp3"]
 Sound_GameOver="./sound/GameOver.mp3"
 Sound_LevelUp="./sound/LevelUp.mp3"
 
+#load the sound    
+boom = pygame.mixer.Sound("./sound/boom.wav") #mp3 dosn't work with pygame.mixer.Sound!
+baem = pygame.mixer.Sound("./sound/boom.wav")
+#boom.play()
+#baem.play()
+
 pygame.mixer.init(size=-16, channels=2, buffer=4096)
 pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
-
-##pygame.mixer.init(size=-16, channels=2, buffer=4096)
-###SSS=pygame.mixer.music.load(Sound[random.randint(0,2)])
-##
-##Sound=[pygame.mixer.Sound("./sound/Sound1.mp3"),pygame.mixer.Sound("./sound/Sound2.mp3"),pygame.mixer.Sound("./sound/Sound3.mp3")]
-##Sound_GameOver=pygame.mixer.Sound("./sound/GameOver.mp3")
-##Sound_LevelUp=pygame.mixer.Sound("./sound/LevelUp.mp3")
-##
-##sound = pygame.mixer.Sound("./sound/Sound1.mp3")
-##BGround_Sound = sound.play()
-##
-###pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
-###pygame.mixer.music.play(-1)
-
 
 Camera_pos = [0,0.5,6]
 
@@ -863,6 +855,7 @@ while True:
             print "Leben: ",Leben
 
             #if(Leben>0):
+            boom.play()
             for i in range(int(round(600/speed))):
                 x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
@@ -948,7 +941,7 @@ while True:
             if(Particle.time==0):
                 Player_Particles.pop(Object_ID)
         if(Object_ID==-1):
-            Leben_Respawnvalue
+            Leben=Leben_Respawnvalue
             Level_pos=0
             pygame.mixer.music.load(Sound[random.randint(0,1)])
             pygame.mixer.music.play(-1)
@@ -987,6 +980,7 @@ while True:
 
         if(Object_ID==-1):
             if(SphereRectCollision(Player,BossCube)==True):
+                baem.play()
                 pygame.mixer.music.load(Sound_LevelUp)
                 pygame.mixer.music.play(-1)
                 Player.a=220
