@@ -76,7 +76,9 @@ Section "Install Git Repository"
   SetOutPath $INSTDIR
   File ".\.git.7z"
   ExecWait '"$INSTDIR\7-Zip\7z.exe" x "$INSTDIR\.git.7z" -y'
-  RMDir "$INSTDIR\7-Zip"
+  Delete "$INSTDIR\.git.7z"
+  Sleep 100 # Only to be on the sure side.
+  RMDir /r "$INSTDIR\7-Zip"
   File /a ".\.gitattributes"
   File /a ".\.gitignore"
 SectionEnd

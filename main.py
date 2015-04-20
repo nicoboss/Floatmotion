@@ -45,6 +45,10 @@ Level_length=500
 BossPrepare=False
 BossScene=False
 
+LeapConected=False
+MouseNoKlick=True
+EndlessMode=False
+EndlessMode_ShowText=0
 FastForward=1.0
 BackslashL_Active=False
 Backquote_Active=False
@@ -173,6 +177,7 @@ class LeapMotionListener(Leap.Listener):
         print "Initialized"
 
     def on_connect(self, controller):
+        main.LeapConected=True
         print "Connected"
 
         # Enable gestures
@@ -183,6 +188,7 @@ class LeapMotionListener(Leap.Listener):
 
     def on_disconnect(self, controller):
         # Note: not dispatched when running in a debugger.
+        main.LeapConected=False
         print "Disconnected"
 
     def on_exit(self, controller):
@@ -206,6 +212,8 @@ class LeapMotionListener(Leap.Listener):
             Player.speed_x=(hand.palm_position[0]/30-Player.x)/(15*speed)
             Player.speed_y=(hand.palm_position[1]/30-8-Player.y)/(15*speed)
             Player.speed_z=(hand.palm_position[2]/30-Player.z)/(20*speed)
+
+        main.LeapConected=True
 
 ##            print Player.speed_x
 ##            print Player.speed_y
@@ -238,6 +246,7 @@ controller.add_listener(listener)
 frame = controller.frame()
 
 pygame.init()
+pygame.mouse.set_visible(False)
 System_Icon = pygame.image.load("img/Cube.ico")
 pygame.display.set_icon(System_Icon)
 screen = pygame.display.set_mode((Screen_with, Screen_high))
@@ -296,6 +305,10 @@ BossCube_Level = glLibObjText("Level",Font_ALGER_100,(255,200,0))
 #BossCube_Up = glLibObjText("Up",Font_ALGER_100,(180,230,30))
 BossCube_Up = glLibObjText("Up",Font_ALGER_100,(255,230,30))
 
+EndlessMode_Endless=glLibObjText("Endless",Font_ALGER_100,(64,128,255))
+EndlessMode_Normal=glLibObjText("Normal",Font_ALGER_100,(64,255,64))
+EndlessMode_Mode=glLibObjText("Mode",Font_ALGER_100,(255,200,0))
+
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
 #Texture_Player = glLibTexture("textures/Oak Ligh.bmp"
@@ -349,11 +362,26 @@ Startzeit=time.clock()
 
 
 while True:
+
+    #print LeapConected
+    MousePressed=pygame.mouse.get_pressed()
+    if(MouseNoKlick==True or MousePressed[0]==True or MousePressed[1]==True or MousePressed[2]==True and LeapConected==False):
+        MousePos=pygame.mouse.get_pos()
+        #print MousePos
+        Player.speed_x=((MousePos[0]-(Screen_with/2))/16-Player.x)/(200*speed)
+        Player.speed_y=-((MousePos[1]-(Screen_high/2))/16-Player.y)/(200*speed)
+            
     key = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+        if(event.type == MOUSEBUTTONUP and MouseNoKlick==False):
+            Player.speed_x=0
+            Player.speed_y=0
+            Player.speed_z=0
+            
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE or key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
                 pygame.quit()
@@ -363,6 +391,17 @@ while True:
             #Hilfe Funktion
             if event.key == K_F1 or event.key == K_HELP:
                 webbrowser.open("Help.mht")
+
+
+            #Toggle MouseNoKlick
+            if event.key == K_q:
+                if(MouseNoKlick==False):
+                    MouseNoKlick=True
+                else:
+                    MouseNoKlick=False
+                    Player.speed_x=0
+                    Player.speed_y=0
+                    Player.speed_z=0
 
 
             #Pause Funktionn
@@ -522,6 +561,22 @@ while True:
                 Cubes = []
                 for z in range(-110,-10,18-Level):
                     GenerateCube(z)
+
+            #Endless Mode
+            if event.key == K_e:
+                if(EndlessMode==False):
+                    EndlessMode=True
+                    EndlessMode_ShowText=25*speed*((more_FPS*1.75)+1)
+                else:
+                    EndlessMode=False
+                    EndlessMode_ShowText=25*speed*((more_FPS*1.75)+1)
+                    Level_pos=0
+                    BossPrepare=False
+                    BossScene=False
+                    Cubes = []
+                    for z in range(-110,-10,18-Level):
+                        GenerateCube(z)
+            
 
             if event.key == K_c:
                 Leben=1
@@ -780,6 +835,24 @@ while True:
         Particle.time-=1
         if(Particle.time==0):
             Particles.pop(Object_ID)
+
+
+    if(EndlessMode_ShowText>0):
+        EndlessMode_ShowText-=1
+        glLibColor((255,255,255,255))
+        if(EndlessMode==True):
+            glTranslated(-1.8,0.3,2)
+            EndlessMode_Endless.draw()
+            glTranslated(0.65,-0.8,0)
+        else:
+            glTranslated(-1.75,0.3,2)
+            EndlessMode_Normal.draw()
+            glTranslated(0.6,-0.8,0)
+
+        #-1.8+0.65=-1.75+0.6=-1.15 => gleiche Rücktranslation
+        EndlessMode_Mode.draw()
+        glTranslated(1.15,0.5,-2)
+        glLibSelectTexture(Texture_Player)
 
 
     if(Leben==0):
@@ -1067,7 +1140,7 @@ while True:
         Level_pos+=Cube.speed_z*speed
         #print Level_pos
 
-        if(Level_pos>Level_length-110):
+        if(EndlessMode==False and Level_pos>Level_length-110):
             if(Level_pos>Level_length):
                 BossScene=True
             else:
@@ -1105,6 +1178,6 @@ while True:
     if(BossPrepare==False):
         GenerateNewArea_Schutzzeit-=1
         if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
-            GenerateNewArea_Schutzzeit=3
+            GenerateNewArea_Schutzzeit=4
             GenerateCube(GenerateNewArea)
 
