@@ -30,6 +30,19 @@ pygame.mixer.init(size=-16, channels=2, buffer=4096)
 pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
 
+##pygame.mixer.init(size=-16, channels=2, buffer=4096)
+###SSS=pygame.mixer.music.load(Sound[random.randint(0,2)])
+##
+##Sound=[pygame.mixer.Sound("./sound/Sound1.mp3"),pygame.mixer.Sound("./sound/Sound2.mp3"),pygame.mixer.Sound("./sound/Sound3.mp3")]
+##Sound_GameOver=pygame.mixer.Sound("./sound/GameOver.mp3")
+##Sound_LevelUp=pygame.mixer.Sound("./sound/LevelUp.mp3")
+##
+##sound = pygame.mixer.Sound("./sound/Sound1.mp3")
+##BGround_Sound = sound.play()
+##
+###pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
+###pygame.mixer.music.play(-1)
+
 
 Camera_pos = [0,0.5,6]
 
@@ -38,6 +51,7 @@ PublishDate="20.04.2015"
 Programmer="Nico Bosshard"
 EMail="nico@bosshome.ch"
 Level=1
+Leben_Respawnvalue=7
 Leben=7
 Player_Schutzzeit=0
 Zeit=0
@@ -161,6 +175,7 @@ with open("config.ini") as f:
 
                 if(words[0]=="Lives"):
                     Leben=eval(words[1])
+                    Leben_Respawnvalue=eval(words[1])
 
                 if(words[0]=="Level_length"):
                     Level_length=eval(words[1])
@@ -418,7 +433,6 @@ Startzeit=time.clock()
 
 
 while True:
-
     #print LeapConected
     MousePressed=pygame.mouse.get_pressed()
     if(MouseNoKlick==True or MousePressed[0]==True or MousePressed[1]==True or MousePressed[2]==True and LeapConected==False):
@@ -934,7 +948,7 @@ while True:
             if(Particle.time==0):
                 Player_Particles.pop(Object_ID)
         if(Object_ID==-1):
-            Leben=7
+            Leben_Respawnvalue
             Level_pos=0
             pygame.mixer.music.load(Sound[random.randint(0,1)])
             pygame.mixer.music.play(-1)
