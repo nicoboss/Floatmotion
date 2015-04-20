@@ -77,7 +77,7 @@ Section "" ; empty string makes it hidden, so would starting with -
   CreateDirectory "$INSTDIR\textures"
   
   
-  File /x FloatmotionSetup.exe /x python-2.7.7.msi /x *.py *
+  File /x FloatmotionSetup.exe /x python-2.7.7.msi /x config.ini /x FloatmotionInstaller.nsi /x FloatmotionInstaller.nsi /x .gitattributes /x .gitignore /x *.py *
   SetOutPath $INSTDIR\Fonts
   File .\Fonts\*
   SetOutPath $INSTDIR\img
@@ -93,10 +93,14 @@ Section "" ; empty string makes it hidden, so would starting with -
 
   SetOutPath $INSTDIR
   
+  #The order here has nothing to do with the order NSIS write the file. NSIS make something (nearly) random what I don't understand but it's probably the time I added the line. So I sorted the following lines like NSIS does in the output file.
+  WriteINIStr "$INSTDIR\config.ini"  "Info" "Version" "Floatmotion 1.0"
+  WriteINIStr "$INSTDIR\config.ini"  "Info" "PublishDate" ${__DATE__}
+  WriteINIStr "$INSTDIR\config.ini"  "Info" "Programmer" "Nico Bosshard"
+  WriteINIStr "$INSTDIR\config.ini"  "Info" "E-Mail" "nico@bosshome.ch"
   
   CreateDirectory "$PICTURES\Floatmotion\"
   WriteINIStr "$INSTDIR\config.ini"  "Path" "Screenshotpath" "$PICTURES\Floatmotion\"
-  
   WriteINIStr "$INSTDIR\config.ini"  "Path" "INSTDIR" "$INSTDIR"
   WriteINIStr "$INSTDIR\config.ini"  "Path" "PROFILE" "$PROFILE"
   WriteINIStr "$INSTDIR\config.ini"  "Path" "DOCUMENTS" "$DOCUMENTS"
@@ -104,6 +108,8 @@ Section "" ; empty string makes it hidden, so would starting with -
   WriteINIStr "$INSTDIR\config.ini"  "Path" "DESKTOP" "$DESKTOP"
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Fullscreen" "true"
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "noStars(more_FPS)" "false"
+  WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Screen_with" "1280"
+  WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Screen_high" "720"
   WriteINIStr "$INSTDIR\config.ini"  "Scoreboard" "TurnStatusbar" "false"
 
   ; write reg info
@@ -124,6 +130,20 @@ Section "Install Source Code"
   File /r *.py
 SectionEnd
 
+Section "Install Git Repository"
+  SectionIn 1 2
+  
+  CreateDirectory "$INSTDIR\7-Zip"
+  SetOutPath "$INSTDIR\7-Zip"
+  File .\7-Zip\*
+  SetOutPath $INSTDIR
+  File ".\.git.7z"
+  ExecWait '"$INSTDIR\7-Zip\7z.exe" x "$INSTDIR\.git.7z" -y'
+  RMDir "$INSTDIR\7-Zip"
+  File /a ".\.gitattributes"
+  File /a ".\.gitignore"
+SectionEnd
+
 
 Section "Install Python 2.7.7 (required)"
   SectionIn 1 2 3
@@ -131,7 +151,7 @@ Section "Install Python 2.7.7 (required)"
   SetOutPath $INSTDIR
   
   IfFileExists "C:\Python27" 0 +3
-    MessageBox MB_OK "Python 2.7.7 is already installed under C:\Python27\ you don't need this again." IDOK 0 ; skipped if file doesn't exist
+    MessageBox MB_OK "Python 2.7.7 is already installed under C:\Python27\ you don't need it again." IDOK 0 ; skipped if file doesn't exist
     Goto Skip_Pyhon77
   File python-2.7.7.msi
   ExecShell "open" '"$INSTDIR\python-2.7.7.msi"'
@@ -177,23 +197,23 @@ SectionGroupEnd
 
 
 
+
+Section "Open Help file after setup"
+  SectionIn 1 2
+  ExecShell "open" '"$INSTDIR\Help.mht"'
+SectionEnd
+
+
 Section "Start Floatmotion after setup"
 
   SectionIn 1 2
 
   #Exec '"$INSTDIR\main.py"'
+  Sleep 250
   ExecShell "open" '"$INSTDIR\main.pyc"'
   #ExecShell "open" '"$INSTDIR"'
 SectionEnd
 
-Section "Open Help file after setup"
-
-  SectionIn 1 2
-
-  #Exec '"$INSTDIR\main.py"'
-  ExecShell "open" '"$INSTDIR\Help.mht"'
-  #ExecShell "open" '"$INSTDIR"'
-SectionEnd
 
 Section "" ; empty string makes it hidden, so would starting with -
   SetOutPath $INSTDIR

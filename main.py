@@ -10,18 +10,17 @@ No Transparence by tintime generated Cubes
 To-Do:
 - Kollisions Sounds
 - BossCube als Fenster Icon
-- Überdenken der GameOver Sphere Textur
 - Löscher unützer Texturen
 - Comments in Surce Code
 - Start screen picture
 - Sphere Texture
-- F1 Hilfe
+- F1 Hilfe fertig schreiben
 """
 import Leap, sys, threading, math, pygame, random, time, webbrowser
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 from pygame.locals import *
 from OpenGLLibrary import *
-import main
+import main #Um das main.pyc Fle zu erstellen
 
 Sound=["./sound/Sound1.mp3","./sound/Sound2.mp3","./sound/Sound3.mp3"]
 Sound_GameOver="./sound/GameOver.mp3"
@@ -53,6 +52,8 @@ Shift_Active=False
 TurnStatusbar=False
 more_FPS=False
 
+Screen_with=1280
+Screen_high=720
 Fulscreen=False
 Screenshotpath=".\\"
 INSTDIR=".\\"
@@ -67,35 +68,43 @@ with open("config.ini") as f:
     for line in f:
         line=line.replace('\n', "") 
         words=line.split('=')
+        
         if(words.__len__()==2):
-            if(section=="[Path]" and words[0]=="INSTDIR"):
-                INSTDIR=words[1]
-            if(section=="[Path]" and words[0]=="PROFILE"):
-                PROFILE=words[1]
-            if(section=="[Path]" and words[0]=="DOCUMENTS"):
-                DOCUMENTS=words[1]
-            if(section=="[Path]" and words[0]=="PICTURES"):
-                PICTURES=words[1]
-            if(section=="[Path]" and words[0]=="DESKTOP"):
-                DESKTOP=words[1]
-                
-            if(section=="[Graphics]" and words[0]=="Fullscreen"):
-                if(words[1]=="true"): #Erst wird true geprüft da defult
-                    Fulscreen=True
-                elif(words[1]=="false"):
-                    Fulscreen=False
-                else:
-                    print "Error in config.ini File Line:",line,"Fullscreen can only be true or false. To not interrupt the programmstart it was automaticly set to true."
-                    Fulscreen=True
+            if(section=="[Path]"):
+                if(words[0]=="INSTDIR"):
+                    INSTDIR=words[1]
+                if(words[0]=="PROFILE"):
+                    PROFILE=words[1]
+                if(words[0]=="DOCUMENTS"):
+                    DOCUMENTS=words[1]
+                if(words[0]=="PICTURES"):
+                    PICTURES=words[1]
+                if(words[0]=="DESKTOP"):
+                    DESKTOP=words[1]
+                            
+            if(section=="[Graphics]"): 
+                if(words[0]=="Screen_with"):
+                    Screen_with=eval(words[1])
+                if(words[0]=="Screen_high"):
+                    Screen_high=eval(words[1])
 
-            if(section=="[Graphics]" and words[0]=="noStars(more_FPS)"):
-                if(words[1]=="false"): #Erst wird false üft da defult
-                    more_FPS=False
-                elif(words[1]=="true"):
-                    more_FPS=True
-                else:
-                    print "Error in config.ini File Line:",line,"noStars(more_FPS) can only be true or false. To not interrupt the programmstart it was automaticly set to false."
-                    more_FPS=False
+                if(words[0]=="Fullscreen"):
+                    if(words[1]=="true"): #Erst wird true geprüft da defult
+                        Fulscreen=True
+                    elif(words[1]=="false"):
+                        Fulscreen=False
+                    else:
+                        print "Error in config.ini File Line:",line,"Fullscreen can only be true or false. To not interrupt the programmstart it was automaticly set to true."
+                        Fulscreen=True
+
+                if(words[0]=="noStars(more_FPS)"):
+                    if(words[1]=="false"): #Erst wird false üft da defult
+                        more_FPS=False
+                    elif(words[1]=="true"):
+                        more_FPS=True
+                    else:
+                        print "Error in config.ini File Line:",line,"noStars(more_FPS) can only be true or false. To not interrupt the programmstart it was automaticly set to false."
+                        more_FPS=False
 
             if(section=="[Scoreboard]" and words[0]=="TurnStatusbar"):
                 if(words[1]=="false"): #Erst wird false geprüft da defult
@@ -231,25 +240,19 @@ frame = controller.frame()
 pygame.init()
 System_Icon = pygame.image.load("img/Cube.ico")
 pygame.display.set_icon(System_Icon)
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((Screen_with, Screen_high))
 #Heart_img = pygame.image.load("img/heart_PNG685.png")
 Heart_img = pygame.image.load("img/Leap.jpg")
 imagerect = Heart_img.get_rect()
-screen.blit(pygame.transform.scale(Heart_img, (1280, 720)), (0, 0))
+screen.blit(pygame.transform.scale(Heart_img, (Screen_with, Screen_high)), (0, 0))
 pygame.display.flip()
 
 speed=1
 frame_time=time.clock()
 frame_time_alt=time.clock()
-##while True:
-##    frame_time=time.clock()
-##    speed=(frame_time-frame_time_alt)*60
-##    print speed
-##    frame_time_alt=frame_time
-##    time.sleep(0.1)
-#print(time.clock()-AAA)
+
 random.seed(time.clock())
-Screen = (1280,720)
+Screen = (Screen_with,Screen_high)
 Cube_speed_z=[0.05,0.055,0.06,0.065,0.07,0.075,0.08,0.085,0.09,0.1]
 Transparence=200
 r=0
@@ -310,13 +313,6 @@ Star_obj = glLibObjFromFile("obj/Star.obj")
 Heart_obj = glLibObjFromFile("obj/Heart.obj")
 
 
-#time.sleep(2)
-
-#for v in Heart.list:
-#    print v
-#print Heart.list
-
-
 for z in range(-110,-10,18-Level):
     GenerateCube(z)
 
@@ -344,7 +340,7 @@ glLibTexturing(True)
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
 
-Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255,0))
+Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(235,255,0))
 Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
 
 Pause_Startzeit=0
@@ -509,9 +505,10 @@ while True:
                     Level+=1
                 else: #elif event.key == K_z or event.key == K_y or event.key == K_MINUS or event.key == K_KP_MINUS:
                     Level-=1
-
-                if(Level<10 and Level>0):
-                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-(Level*20),Level*5))
+                if(Level==1):
+                    Level_Text = glLibObjText("Level 1",Font_ALGER_100,(235,255,0))
+                if(Level<10 and Level>1):
+                    Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-((Level-1)*20),Level*5))
                 elif(Level==10):
                     Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,0,128))
                 elif(Level>10):
@@ -741,7 +738,7 @@ while True:
             print "Leben: ",Leben
 
             #if(Leben>0):
-            for i in range(int(round(300/speed))):
+            for i in range(int(round(600/speed))):
                 x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
@@ -895,8 +892,10 @@ while True:
                     BossCube.z=-100
                     Player.a=255
                     Level+=1
-                    if(Level<10):
-                        Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-(Level*20),Level*5))
+                    if(Level==1):
+                        Level_Text = glLibObjText("Level 1",Font_ALGER_100,(235,255,0))
+                    elif(Level<10):
+                        Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(255,255-((Level-1)*20),Level*5))
                     elif(Level==10):
                         Level_Text = glLibObjText("Level X",Font_ALGER_100,(255,0,128))
                     elif(Level<1):
