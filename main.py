@@ -30,8 +30,13 @@ pygame.mixer.init(size=-16, channels=2, buffer=4096)
 pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
 
+
 Camera_pos = [0,0.5,6]
 
+Version="Floatmotion 1.0"
+PublishDate="20.04.2015"
+Programmer="Nico Bosshard"
+EMail="nico@bosshome.ch"
 Level=1
 Leben=7
 Player_Schutzzeit=0
@@ -74,6 +79,16 @@ with open("config.ini") as f:
         words=line.split('=')
         
         if(words.__len__()==2):
+            if(section=="[Info]"):
+                if(words[0]=="Version"):
+                    Version=words[1]
+                if(words[0]=="PublishDate"):
+                    PublishDate=words[1]
+                if(words[0]=="Programmer"):
+                    Programmer=words[1]
+                if(words[0]=="E-Mail"):
+                    EMail=words[1]
+            
             if(section=="[Path]"):
                 if(words[0]=="INSTDIR"):
                     INSTDIR=words[1]
@@ -86,7 +101,7 @@ with open("config.ini") as f:
                 if(words[0]=="DESKTOP"):
                     DESKTOP=words[1]
                             
-            if(section=="[Graphics]"): 
+            if(section=="[Graphics]"):
                 if(words[0]=="Screen_with"):
                     Screen_with=eval(words[1])
                 if(words[0]=="Screen_high"):
@@ -102,7 +117,7 @@ with open("config.ini") as f:
                         Fulscreen=True
 
                 if(words[0]=="noStars(more_FPS)"):
-                    if(words[1]=="false"): #Erst wird false üft da defult
+                    if(words[1]=="false"): #Erst wird false geprüft da defult
                         more_FPS=False
                     elif(words[1]=="true"):
                         more_FPS=True
@@ -118,6 +133,47 @@ with open("config.ini") as f:
                 else:
                     print "Error in config.ini File Line:",line,"TurnStatusbar can only be true or false. To not interrupt the programmstart it was automaticly set to false."
                     TurnStatusbar=False
+
+            if(section=="[Control]" and words[0]=="MouseNoKlick(mouse Only)"):
+                if(words[1]=="true"): #Erst wird true geprüft da defult
+                    MouseNoKlick=True
+                elif(words[1]=="false"):
+                    MouseNoKlick=False
+                else:
+                    print "Error in config.ini File Line:",line,"MouseNoKlick can only be true or false. To not interrupt the programmstart it was automaticly set to true."
+                    MouseNoKlick=True
+
+            if(section=="[Default]"):
+                if(words[0]=="EndlessMode"):
+                    if(words[1]=="false"): #Erst wird false geprüft da defult
+                        EndlessMode=False
+                    elif(words[1]=="true"):
+                        EndlessMode=True
+                    else:
+                        print "Error in config.ini File Line:",line,"EndlessMode can only be true or false. To not interrupt the programmstart it was automaticly set to false."
+                        EndlessMode=False
+
+                if(words[0]=="FastForward"):
+                    FastForward=eval(words[1])
+                
+                if(words[0]=="Level"):
+                    Level=eval(words[1])
+
+                if(words[0]=="Lives"):
+                    Leben=eval(words[1])
+
+                if(words[0]=="Level_length"):
+                    Level_length=eval(words[1])
+
+            if(section=="[Camera]"):
+                if(words[0]=="Camera_pos.x"):
+                    Camera_pos[0]=eval(words[1])
+
+                if(words[0]=="Camera_pos.y"):
+                    Camera_pos[1]=eval(words[1])
+
+                if(words[0]=="Camera_pos.z"):
+                    Camera_pos[2]=eval(words[1])
             
             print line.split('=')
         else:

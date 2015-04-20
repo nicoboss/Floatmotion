@@ -100,17 +100,27 @@ Section "" ; empty string makes it hidden, so would starting with -
   WriteINIStr "$INSTDIR\config.ini"  "Info" "E-Mail" "nico@bosshome.ch"
   
   CreateDirectory "$PICTURES\Floatmotion\"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "Screenshotpath" "$PICTURES\Floatmotion\"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "INSTDIR" "$INSTDIR"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "PROFILE" "$PROFILE"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "DOCUMENTS" "$DOCUMENTS"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "PICTURES" "$PICTURES"
-  WriteINIStr "$INSTDIR\config.ini"  "Path" "DESKTOP" "$DESKTOP"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "Screenshotpath" "$PICTURES\Floatmotion\"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "INSTDIR" "$INSTDIR"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "PROFILE" "$PROFILE"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "DOCUMENTS" "$DOCUMENTS"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "PICTURES" "$PICTURES"
+  WriteINIStr "$INSTDIR\config.ini"  "Paths" "DESKTOP" "$DESKTOP"  
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Fullscreen" "true"
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "noStars(more_FPS)" "false"
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Screen_with" "1280"
   WriteINIStr "$INSTDIR\config.ini"  "Graphics" "Screen_high" "720"
-  WriteINIStr "$INSTDIR\config.ini"  "Scoreboard" "TurnStatusbar" "false"
+  WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.x" "0"
+  WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.y" "0.5"
+  WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.z" "6"
+  WriteINIStr "$INSTDIR\config.ini"  "Control" "MouseNoKlick(mouse Only)" "true"
+  WriteINIStr "$INSTDIR\config.ini"  "Default" "EndlessMode" "false"
+  WriteINIStr "$INSTDIR\config.ini"  "Default" "FastForward" "1.0"
+  WriteINIStr "$INSTDIR\config.ini"  "Default" "Level" "1"
+  WriteINIStr "$INSTDIR\config.ini"  "Default" "Lives" "7"
+  WriteINIStr "$INSTDIR\config.ini"  "Default" "Level_length" "500"
+  
+  
 
   ; write reg info
   WriteRegStr HKLM SOFTWARE\Floatmotion "Install_Dir" "$INSTDIR"
@@ -139,9 +149,9 @@ Section "Install Git Repository"
   SetOutPath $INSTDIR
   File ".\.git.7z"
   ExecWait '"$INSTDIR\7-Zip\7z.exe" x "$INSTDIR\.git.7z" -y'
-  Sleep 100
-  Delete ".\.git.7z"
-  RMDir "$INSTDIR\7-Zip"
+  Delete "$INSTDIR\.git.7z"
+  Sleep 100 # Only to be on the sure side.
+  RMDir /r "$INSTDIR\7-Zip"
   File /a ".\.gitattributes"
   File /a ".\.gitignore"
 SectionEnd
