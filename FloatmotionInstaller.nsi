@@ -113,7 +113,7 @@ Section "" ; empty string makes it hidden, so would starting with -
   WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.x" "0"
   WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.y" "0.5"
   WriteINIStr "$INSTDIR\config.ini"  "Camera" "Camera_pos.z" "6"
-  WriteINIStr "$INSTDIR\config.ini"  "Control" "MouseNoKlick(mouse Only)" "true"
+  WriteINIStr "$INSTDIR\config.ini"  "Control" "MouseNoKlick(mouse Only)" "false"
   WriteINIStr "$INSTDIR\config.ini"  "Default" "EndlessMode" "false"
   WriteINIStr "$INSTDIR\config.ini"  "Default" "FastForward" "1.0"
   WriteINIStr "$INSTDIR\config.ini"  "Default" "Level" "1"

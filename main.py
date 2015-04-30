@@ -9,33 +9,39 @@ Known Bugs:
 
 To-Do:
 - Kollisions Sounds suchen
-- BossCube als Fenster Icon
-- Löscher unützer Texturen
-- Comments in Surce Code
+- BossCube als Icon
+- Comments in Surce Code verbessern
 - Start screen picture
-- Sphere Texture
+- Sphere Textur
+    - Löscher unützer Texturen
 - F1 Hilfe verbessern
+- GitHub Repository
 """
-import Leap, sys, threading, math, pygame, random, time, webbrowser
-from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
-from pygame.locals import *
-from OpenGLLibrary import *
-import main #Um das main.pyc Fle zu erstellen
+import Leap, sys, threading, math, pygame, random, time, webbrowser #Some usual Libary staff.
+from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture #Leap Motion a movment control system
+from pygame.locals import * #pygame is a Game Engine like SDL2 for Python but probably bether then pySDL2
+from OpenGL.GL import * #OpenGL the best grafic libary ever!
+from OpenGL.GLU import * #And other pyOpenGL staff
+from OpenGLLibrary import * #A GameEnigine that I have downloaded and modivied I also add some Functions to it and fixed bugs.
+import main #To get the main.pyc file.
 
+#Set the background soundpPaths
 Sound=["./sound/Sound1.mp3","./sound/Sound2.mp3","./sound/Sound3.mp3"]
 Sound_GameOver="./sound/GameOver.mp3"
 Sound_LevelUp="./sound/LevelUp.mp3"
 
-#load the sound    
-boom = pygame.mixer.Sound("./sound/boom.wav") #mp3 dosn't work with pygame.mixer.Sound!
-baem = pygame.mixer.Sound("./sound/boom.wav")
-#boom.play()
-#baem.play()
-
+#Play a random backgrund sound
 pygame.mixer.init(size=-16, channels=2, buffer=4096)
 pygame.mixer.music.load(Sound[random.randint(0,2)]) #random.randint(1,2)
 pygame.mixer.music.play(-1)
 
+#Load sound effects - mp3 dosn't work with pygame.mixer.Sound!
+boom = [pygame.mixer.Sound("./sound/boom.wav"),pygame.mixer.Sound("./sound/boom.wav"),pygame.mixer.Sound("./sound/boom.wav")]
+GetLive = pygame.mixer.Sound("./sound/boom.wav")
+baem = pygame.mixer.Sound("./sound/boom.wav")
+
+
+#Set the defult Values to be indebendent from a defect config.ini File
 Camera_pos = [0,0.5,6]
 
 Version="Floatmotion 1.0"
@@ -187,7 +193,7 @@ with open("config.ini") as f:
             section=line
 
 
-
+#A Function to generate a 3x3 feld Cubes. It's maybe the hart of my program.
 def GenerateCube(z=-100):
     Cubes_count=0
     Hearts_count=0
@@ -201,6 +207,7 @@ def GenerateCube(z=-100):
                     Cubes.append(glLibObjCube(0.5,x,y,z,0,0,Cube_speed_z[Level-1],255,0,0,100,1))
                     Hearts_count+=1
 
+    #If all 9 cubes are generated there will be no possibility to don't lose a live so the next lines replaces all 9 Cubes with heart cubes.
     if(Cubes_count==9):
         for i in range(9):
             Cubes.pop() #by Defult remove last Objekt
@@ -211,14 +218,15 @@ def GenerateCube(z=-100):
         Hearts_count+=9
 
 
-def LevelReload():
-    Level_pos=0
-    BossPrepare=False
-    BossScene=False
-    Cubes = []
-    for z in range(-110,-10,18-Level):
-        GenerateCube(z)
+##def LevelReload():
+##    Level_pos=0
+##    BossPrepare=False
+##    BossScene=False
+##    Cubes = []
+##    for z in range(-110,-10,18-Level):
+##        GenerateCube(z)
 
+#If the programm don't reponse to any Events windows make the Window white and means that the program crashed. Also It's always usefull if the exit keys works.
 def EndCutscene_key():
     key = pygame.key.get_pressed()
     for event in pygame.event.get():
@@ -230,7 +238,26 @@ def EndCutscene_key():
                 pygame.quit()
                 sys.exit()
 
+#A Function th check if a sphere colise with a cube. To uderstand how it works you have to imagen what it do and maybe also draw it through a paper.
+def SphereRectCollision(sphere, rect):
+    sphereXDistance = abs(sphere.x - rect.x)
+    sphereYDistance = abs(sphere.y - rect.y)
+    sphereZDistance = abs(sphere.z - rect.z)
 
+    if(sphereXDistance >= (rect.size + sphere.radius)): return False
+    if(sphereYDistance >= (rect.size + sphere.radius)): return False
+    if(sphereZDistance >= (rect.size + sphere.radius)): return False
+
+    if(sphereXDistance < (rect.size)): return True
+    if(sphereYDistance < (rect.size)): return True
+    if(sphereZDistance < (rect.size)): return True
+
+    cornerDistance_sq = (sphereXDistance - rect.size)**2 + (sphereYDistance - rect.size)**2 + (sphereYDistance - rect.size)**2
+
+    return (cornerDistance_sq < (sphere.radius * sphere.radius))
+
+
+#The whole LeapMotion Listener.
 class LeapMotionListener(Leap.Listener):
     finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
     bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
@@ -283,42 +310,26 @@ class LeapMotionListener(Leap.Listener):
 ##            print Player.speed_z
 
 
-def SphereRectCollision(sphere, rect):
-    sphereXDistance = abs(sphere.x - rect.x)
-    sphereYDistance = abs(sphere.y - rect.y)
-    sphereZDistance = abs(sphere.z - rect.z)
 
-    if(sphereXDistance >= (rect.size + sphere.radius)): return 0
-    if(sphereYDistance >= (rect.size + sphere.radius)): return 0
-    if(sphereZDistance >= (rect.size + sphere.radius)): return 0
-
-    if(sphereXDistance < (rect.size)): return 1
-    if(sphereYDistance < (rect.size)): return 1
-    if(sphereZDistance < (rect.size)): return 1
-
-    cornerDistance_sq = (sphereXDistance - rect.size)**2 + (sphereYDistance - rect.size)**2 + (sphereYDistance - rect.size)**2
-
-    return (cornerDistance_sq < (sphere.radius * sphere.radius))
-
-
+#Creat and start the LeapMotion Listener
 listener = LeapMotionListener()
 controller = Leap.Controller()
-
 controller.add_listener(listener)
-
 frame = controller.frame()
 
+
+#Initialize the display module, hide the mouse and set the title image
 pygame.init()
 pygame.mouse.set_visible(False)
 System_Icon = pygame.image.load("img/Cube.ico")
 pygame.display.set_icon(System_Icon)
 screen = pygame.display.set_mode((Screen_with, Screen_high))
-#Heart_img = pygame.image.load("img/heart_PNG685.png")
-Heart_img = pygame.image.load("img/Leap.jpg")
-imagerect = Heart_img.get_rect()
-screen.blit(pygame.transform.scale(Heart_img, (Screen_with, Screen_high)), (0, 0))
+Titleimage = pygame.image.load("img/Leap.jpg")
+imagerect = Titleimage.get_rect()
+screen.blit(pygame.transform.scale(Titleimage, (Screen_with, Screen_high)), (0, 0))
 pygame.display.flip()
 
+#Preparing some Variables for the later user. The diffrence between the global variables on the top of thepProgramm is that ths have to to with grafic or FPS
 speed=1
 frame_time=time.clock()
 frame_time_alt=time.clock()
@@ -352,11 +363,10 @@ glLibColorMaterial(True)
 drawing = 0
 #Objects = [glLibObjCube(),glLibObjTeapot(),glLibObjSphere(64),glLibObjCylinder(0.5,1.0,64),glLibObjCone(0.5,1.8,64),glLibObjFromFile("obj/Tunnel.obj")]
 
-#time.sleep(2)
-Font_ALGER_42 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),42)
+#Load the Font ALGER.TTF
 Font_ALGER_100 = pygame.font.Font(os.path.join("Fonts","ALGER.TTF"),100)
-#Font_WINGDNG2_100 = pygame.font.Font(os.path.join("Fonts","WINGDNG2.TTF"),100)
 
+#Generate some Texts.
 Pause_Text = glLibObjText("Pause",Font_ALGER_100,(255,255,0))
 Pause_Ready = glLibObjText("Ready",Font_ALGER_100,(255,200,0))
 Pause_GO = glLibObjText("GO",Font_ALGER_100,(0,255,0))
@@ -372,6 +382,10 @@ EndlessMode_Endless=glLibObjText("Endless",Font_ALGER_100,(64,128,255))
 EndlessMode_Normal=glLibObjText("Normal",Font_ALGER_100,(64,255,64))
 EndlessMode_Mode=glLibObjText("Mode",Font_ALGER_100,(255,200,0))
 
+Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(235,255,0))
+Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
+
+#Create Objects and Load *.obj and Textures for the later use.
 Player = glLibObjTexSphere(0.3,64,0,0,2)
 Player_Particles = []
 #Texture_Player = glLibTexture("textures/Oak Ligh.bmp"
@@ -384,7 +398,6 @@ BossCube=glLibObjBossCube(3,0,0,-100,0,0,0.1,255,0,0,0,0,-1)
 BossCube_Particles = []
 
 #BGround = glLibObjFromFile("obj/leer.obj")
-
 Star_obj = glLibObjFromFile("obj/Star.obj")
 Heart_obj = glLibObjFromFile("obj/Heart.obj")
 
@@ -408,31 +421,30 @@ for i in range(400):
     Stars.append(glLibObjStar(random.uniform(0.01,0.03),Star_x,Star_y,random.uniform(-100,0),0,0,Cube_speed_z[Level-1],random.randint(100,255),random.randint(100,255),random.randint(100,255),Transparence,0))
 
 
+#And the ast thin before the main Loop
 #glClearColor( 1, 1, 1, 1)
-
-P=-40
-
 glLibTexturing(True)
 glEnable(GL_DEPTH_TEST)
 #glDisable(GL_DEPTH_TEST)
 
-Level_Text = glLibObjText("Level "+str(Level),Font_ALGER_100,(235,255,0))
-Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
 
 Pause_Startzeit=0
 Pause_Time=0
 Startzeit=time.clock()
 
 
+#Begin of the main Loop
 while True:
-    #print LeapConected
+
+    #Muse Controller Funcion
     MousePressed=pygame.mouse.get_pressed()
     if(MouseNoKlick==True or MousePressed[0]==True or MousePressed[1]==True or MousePressed[2]==True and LeapConected==False):
         MousePos=pygame.mouse.get_pos()
-        #print MousePos
         Player.speed_x=((MousePos[0]-(Screen_with/2))/16-Player.x)/(200*speed)
         Player.speed_y=-((MousePos[1]-(Screen_high/2))/16-Player.y)/(200*speed)
-            
+
+
+    #Everithing for you can use the keyboard comes in then next lines
     key = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -443,12 +455,14 @@ while True:
             Player.speed_x=0
             Player.speed_y=0
             Player.speed_z=0
-            
+
+        #The next Functions neads only one call when a key get pressed.
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE or key[K_LALT] and key[K_F4] or key[K_RALT] and key[K_F4]:
                 pygame.quit()
                 sys.exit()
 
+            #print event.key
 
             #Hilfe Funktion
             if event.key == K_F1 or event.key == K_HELP:
@@ -515,8 +529,7 @@ while True:
                 Pause_Time+=time.clock()-Pause_Startzeit
                 frame_time_alt=time.clock()
 
-            #print event.key
-
+            
             if(event.key == K_EQUALS):
                 FastForward=1.0
 
@@ -654,12 +667,13 @@ while True:
                 Leben=99
 
 
-##            #Wechsle Fulscreen Modus
+##            #Wechsle Fulscreen Modus - Doesn't work betwenn grafik bugs! Please use the config.ini file for this.
 ##            if event.key == K_F11:
 ##                glLibWindow.toggle_fullscreen(Window)
 ##                Window.flip()
 
 
+    #Keboard Player Controller
     if key[K_a]: Player.x+=-0.01*speed
     if key[K_w]: Player.y+=0.01*speed
     if key[K_d]: Player.x+=0.01*speed
@@ -672,7 +686,7 @@ while True:
     if key[K_o]: Player.speed_z+=0.0003*speed
     if key[K_p]: Player.speed_z+=-0.003*speed
 
-
+    #It's also possibe to move the camera.
     if key[K_LEFT]: Camera_pos[0]-=1*speed
     if key[K_RIGHT]: Camera_pos[0]+=1*speed
     if key[K_UP]: Camera_pos[2]-=1*speed
@@ -683,6 +697,7 @@ while True:
     if key[K_LCTRL] or key[K_RCTRL] or key[K_BACKSPACE]: Camera_pos = [0,0.5,6]
 
 
+    #Fast Forward 4x as log as Tap is pressed.
     if key[K_TAB]:
         Tap_Press=True
     else:
@@ -718,6 +733,8 @@ while True:
         Player.speed_z*=-0.25
 
 
+    #And now the Key thing is finisch and next comes the grafik rendering.
+    #First the Window get cleared with black and the view get set to Statusbar
     Camera.update()
     Staturbar_Camera.update()
 
@@ -727,14 +744,8 @@ while True:
     Staturbar_Camera.set_camera()
     Staturbar_Sun.draw()
 
-    #P+=0.001
-    #glTranslated(0,-1.5,0)
 
-    #glLibTexturing(True)
-
-    #Level_Text = glLibObjText("Level 1   Leben 7   Zeit: 10:61.345",Font_ALGER_100,(255,128,50))
-
-
+    #If the Live value get changed then rerender the Lives Text.
     if(Leben_alt<>Leben):
         Leben_alt=Leben
         if(Leben<0): Leben=0
@@ -743,6 +754,8 @@ while True:
             Lives_Text = glLibObjText("Lives 0"+str(Leben),Font_ALGER_100,(255,30,10))
         else:
             Lives_Text = glLibObjText("Lives "+str(Leben),Font_ALGER_100,(255,30,10))
+
+    #The Time since the lasy death or the ZPos neads every frame a rerendering. Which got rerenderd depends if the Statusbar is Toggeld.
     if(TurnStatusbar==False):
         Time=time.clock()-Startzeit-Pause_Time
         if(Time<100):
@@ -762,10 +775,10 @@ while True:
             Time_Text = glLibObjText("ZPos "+str(ZPos),Font_ALGER_100,(0,200,255))
 
 
+    #The next lines checks and calculate the FastForward thing
     if(FastForward>16):
         FastForward=16
 
-    #print FastForward
     if(Tap_Press==False):
         FastForward_Speed=FastForward
     else:
@@ -773,6 +786,8 @@ while True:
 
     speed*=FastForward_Speed
 
+    
+    #And here the FPS or the FastForward value get rerendered every Frame. On normal speed FPS and outherwise the Statusbar shows the FastForward value.
     if(FastForward==1.0 and Tap_Press==False):
         FPS_Text = glLibObjText("FPS "+str(int(round(60/speed,0))),Font_ALGER_100,(128,255,50))
     elif(FastForward_Speed==1):
@@ -785,6 +800,7 @@ while True:
         FPS_Text = glLibObjText("FF "+str(round(FastForward_Speed,1)),Font_ALGER_100,(((FastForward*8)+127),100*(Tap_Press+1),(FastForward*8)))
 
 
+    #And finaly the rendered Text get drawn throught the screen.
     glScalef(4,4,4);
     glTranslated(-7.7,-0.5,0)
     Level_Text.draw()
@@ -801,13 +817,14 @@ while True:
 
 
 
-
+    #Now We need also thö render The Game Window so change the view to View3D
     View3D.set_view()
     Camera.set_camera()
     Sun.draw()
 
-    #BGround.x=-0.25
-    #BGround.y=-0.25
+##    #Yes my programm used to have a 3D background but I thougt it's nicer to play in the space. So I comit out this Function. Maybe somebody will use it.
+##    #BGround.x=-0.25
+##    #BGround.y=-0.25
 ##    BGround.z+=0.01*speed
 ##    glScalef(10,10,10);
 ##    glTranslated(BGround.x,BGround.y,BGround.z)
@@ -815,12 +832,13 @@ while True:
 ##    glTranslated(-BGround.x,-BGround.y,-BGround.z)
 ##    glScalef(0.1,0.1,0.1);
 
-
 ##    glTranslated(-0.5,Player.y,5+Player.x+10)
 ##    BGround.draw(n)
 ##    glTranslated(-0.5,-Player.y,-5+Player.x+10)
 
 
+
+    #The next staff are the whole OpenGL drawing, moveing and calculating thing. It's a bit compley but you'll understand a lot of it. I't isn't possibly to commit this a lot because you need to understand it or if not then you need to train your imagen.
     Player_Schutzzeit-=1
     GenerateNewArea=0
     Object_ID=-1
@@ -831,20 +849,28 @@ while True:
             Cubes.pop(Object_ID)
         if(SphereRectCollision(Player,Cube)==True):
             if(Cube.cube_type==1):
+                GetLive.play()
                 Leben+=1
             else:
                 if(Player_Schutzzeit<0):
                     Player_Schutzzeit=4
+                    boom[random.randint(0,2)].play()
                     Leben-=1
-
+                    
+                #If ives=0 then preparing the game Over Screen
                 if(Leben==0):
                     print 'Tot!'
+
+                    #Change the sound to the Game Over sound
                     #pygame.mixer.music.fadeout(1)
                     pygame.mixer.music.load(Sound_GameOver)
                     pygame.mixer.music.play(-1)
-                    for Cube in Cubes:
-                        Cube.z-=60
 
+                    #Move all cubes away from the scene
+                    for Cube in Cubes:
+                        Cube.z-=40
+
+                    #Generate the Player_Particles for the game Over scene. They will be drawn in the main loop
                     for i in range(int(round(400/(speed*(more_FPS+1))))):
                         x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                         y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
@@ -852,17 +878,18 @@ while True:
                         magnitude  = sqrt(x**2 + y**2 + z**2)
                         Player_Particles.append(glLibObjTexSphere(random.uniform(0.1,0.2),64,Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(75,85), y/magnitude/random.uniform(75,85), z/magnitude/random.uniform(75,85),Cube.r,Cube.g,Cube.b,255,0,0,0,2,round(300/(speed*(more_FPS+1)))))
 
+            #Write the amount of Lifes into the Python console.
             print "Leben: ",Leben
 
-            #if(Leben>0):
-            boom.play()
+            #Generate the Particles that you can see if you hit a cube.
+            #if(Leben>0): #Yes I decided that you always se Particles during the Game Over scene. A reason not to show Particles is to have a liddle bit more FPS in the Game Over Scene.
             for i in range(int(round(600/speed))):
                 x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 y=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 z=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
                 magnitude  = sqrt(x**2 + y**2 + z**2)
                 Particles.append(glLibObjCube(random.uniform(0.03,0.09),Player.x,Player.y,Player.z+0.5,x/magnitude/random.uniform(45,55), y/magnitude/random.uniform(45,55), z/magnitude/random.uniform(45,55),Cube.r,Cube.g,Cube.b,Transparence,2,round(300/speed)))
-            Cubes.pop(Object_ID)
+            Cubes.pop(Object_ID) #Remove The cube the Player hit
 
     if(more_FPS==False):
         #Hier habe ich absichtlich Star_obj.draw() und Stars.pop() in die gleiche for Star in Stars Schleife gemacht da dadurch viele Ressourcen gespart sowie durch das unsaubere Löschen coole Blinkeffekte entstehen.
@@ -885,6 +912,7 @@ while True:
             glTranslated(-Star.x,-Star.y+0.8,-Star.z-0.8)
 
 
+    #Drawing Particles
     Object_ID=-1
     for Particle in Particles:
         Object_ID+=1
@@ -900,6 +928,7 @@ while True:
             Particles.pop(Object_ID)
 
 
+    #Showing Text by changing between Normal- and Endless Mode.
     if(EndlessMode_ShowText>0):
         EndlessMode_ShowText-=1
         glLibColor((255,255,255,255))
@@ -927,6 +956,7 @@ while True:
         glTranslated(1.1,0.2,-2)
         glLibSelectTexture(Texture_Player)
 
+        #Showing Player Particle so this pard renders the Game Over screen
         Object_ID=-1
         for Particle in Player_Particles:
             Object_ID+=1
@@ -940,14 +970,17 @@ while True:
             Particle.time-=1
             if(Particle.time==0):
                 Player_Particles.pop(Object_ID)
+
+        #The folowing block get executet only once after the Game Over Scene. It reset the Level and Live value.
         if(Object_ID==-1):
             Leben=Leben_Respawnvalue
             Level_pos=0
-            pygame.mixer.music.load(Sound[random.randint(0,1)])
+            pygame.mixer.music.load(Sound[random.randint(0,2)])
             pygame.mixer.music.play(-1)
             Pause_Time=0
             Startzeit=time.clock()
-            
+
+    #Drawing the Level Up Scene
     elif(BossScene==True):
         Object_ID=-1
         glScalef(0.1,0.1,0.1);
@@ -978,7 +1011,10 @@ while True:
         glScalef(10,10,10);
 
 
+        
         if(Object_ID==-1):
+
+            #If the player hit the BossCube then prepaireing the LevelUp scene
             if(SphereRectCollision(Player,BossCube)==True):
                 baem.play()
                 pygame.mixer.music.load(Sound_LevelUp)
@@ -991,6 +1027,7 @@ while True:
                             magnitude  = sqrt(x**2 + y**2 + z**2)
                             BossCube_Particles.append(glLibObjBossCube(random.uniform(0.1,0.2),BossCube.x,BossCube.y,BossCube.z+1,x/magnitude/random.uniform(45,75), y/magnitude/random.uniform(45,75), z/magnitude/random.uniform(45,55),255,0,0,0,2,600/(speed*((more_FPS*2.25)+1))))
 
+            #Drawing the BosCube scene
             BossCube.x+=BossCube.speed_x*speed
             BossCube.y+=BossCube.speed_y*speed
             BossCube.z+=BossCube.speed_z*speed
@@ -1021,6 +1058,7 @@ while True:
                 glTranslated(0.54,0.2,-2)
                 glLibSelectTexture(Texture_Player)
 
+                #If the destroing time of cube 0 under 50 then the scene ends.
                 if(BossCube_Particles[0].time<50):
                     BossCube_Particles = []
 ##                    Prticles_count=BossCube_Particles.__len__()
@@ -1028,6 +1066,8 @@ while True:
 ##                        BossCube_Particles.pop()
                     BossCube.z=-100
                     Player.a=255
+
+                    #Add one Level and rerender the Level Text
                     Level+=1
                     if(Level==1):
                         Level_Text = glLibObjText("Level 1",Font_ALGER_100,(235,255,0))
@@ -1050,6 +1090,7 @@ while True:
                         Camera.set_camera()
                         Sun.draw()
 
+                        #Loading the Text For the End Screen
                         End_Text_1 = glLibObjText("Congratulations",Font_ALGER_100,(255,200,0))
                         End_Text_2 = glLibObjText("You've reached the",Font_ALGER_100,(255,200,0))
                         End_Text_3 = glLibObjText("end of the game",Font_ALGER_100,(255,200,0))
@@ -1057,12 +1098,16 @@ while True:
                         End_Text_5 = glLibObjText("and will play it again",Font_ALGER_100,(255,200,0))
                         End_Text_6 = glLibObjText("Enjoy yourself!",Font_ALGER_100,(255,200,0))
                         End_Text_7 = glLibObjText("Nico Bosshard",Font_ALGER_100,(255,200,0))
+
+                        #Prepare the End Screen renderig
                         glDisable(GL_DEPTH_TEST)
                         glLibColor((255,255,255,255))
                         glScalef(0.5,0.5,0.5)
 
                         z=-40
                         glTranslated(0,0,-40)
+
+                        #End Screen drawing loop
                         while z<10:
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
                             glTranslated(-3.6,3,0.03*speed)
@@ -1091,8 +1136,7 @@ while True:
                             EndCutscene_key()
                             Window.flip()
 
-
-
+                        #Prparing the "The ENd Screen and Loading the Text"
                         #glTranslated(0,0,-100)
                         glScalef(2,2,2)
                         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -1101,6 +1145,8 @@ while True:
                         End_Text_8 = glLibObjText("The",Font_ALGER_100,(255,200,0))
                         End_Text_9 = glLibObjText("End",Font_ALGER_100,(255,200,0))
                         glScalef(2,2,2)
+
+                        #"The End" drawing loop
                         while z>-20:
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
                             glTranslated(-0.75,0.1,-0.03*speed)
@@ -1116,13 +1162,15 @@ while True:
 
                             EndCutscene_key()
                             Window.flip()
-
+                            
+                        #Preparing the real colorfull End Screen
                         glTranslated(0,0,20)
                         glScalef(0.5,0.5,0.5)
 
                         glLibTexturing(False)
                         glLibColor((255,255,255,255))
 
+                        #Generate all the rainbowcolored cubes
                         speed=6
                         for i in range(int(round(1500/speed))):
                             x=random.uniform(-Cube_speed_z[Level-1],Cube_speed_z[Level-1])
@@ -1133,6 +1181,7 @@ while True:
 
                         #glScalef(0.1,0.1,0.1);
                         while (BossCube_Particles[0].time>50):
+                            #It was a bug I missed glClear bit it was so beautiful that I let it as it was.
                             #glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
                             Object_ID=-1
                             for Particle in BossCube_Particles:
@@ -1164,8 +1213,11 @@ while True:
                         #glScalef(10,10,10);
                         glEnable(GL_DEPTH_TEST)
 
+                        #Closeing the Game
                         pygame.quit()
                         sys.exit()
+
+                    
                     Level_pos=0
                     BossPrepare=False
                     BossScene=False
@@ -1173,8 +1225,6 @@ while True:
                         GenerateCube(z)
                     pygame.mixer.music.load(Sound[random.randint(0,2)])
                     pygame.mixer.music.play(-1)
-
-
 
 
     else:
@@ -1210,6 +1260,7 @@ while True:
             else:
                 BossPrepare=True
 
+    #The following lines rotates and draws the player. It sould locks as natural as possible.
     if(Leben>0):
         glLibColor((Player.r,Player.g,Player.b,Player.a))
         glTranslated(Player.x,Player.y,Player.z)
@@ -1226,19 +1277,20 @@ while True:
         glRotatef(-Player.rotate_z,1,0,0)
         glRotatef(Player.rotate_y,1,0,0)
         glRotatef(-Player.rotate_x,0,1,0)
-
-
-
         glTranslated(-Player.x,-Player.y,-Player.z)
 
 
+    #the folowing lines are very important! They calculate the FPS Rate and speed up the game so that the game speed is independed of the computer speed and the FPS rate.
     frame_time=time.clock()
     speed=(frame_time-frame_time_alt)*60
     #print speed
     frame_time_alt=frame_time
 
-    Window.flip()
+    #Fliping the Window means nothing then to change between to Buffers. You can imagen to sheets of paper. You draw at once and pu the other on the wall. Now if you are finish drowing you put the new one on the wall und draw over the old one again so that it will be the new one
+    #Window.flip()
+    pygame.display.flip()
 
+    #If no BossCene is preparing nnd it's time the a new 3x3 cube will be generated.
     if(BossPrepare==False):
         GenerateNewArea_Schutzzeit-=1
         if(GenerateNewArea<0 and GenerateNewArea_Schutzzeit<1):
