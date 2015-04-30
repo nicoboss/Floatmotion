@@ -13,7 +13,7 @@ To-Do:
 - Comments in Surce Code verbessern
 - Start screen picture
 - Sphere Textur
-    - Löscher unützer Texturen
+    - Löscher unützen Texturen
 - F1 Hilfe verbessern
 - GitHub Repository
 """
